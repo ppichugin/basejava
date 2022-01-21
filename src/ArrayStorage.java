@@ -62,10 +62,8 @@ public class ArrayStorage {
                 // копируем часть массива после удаленного элемента во временный массив
                 Resume[] tempResume = new Resume[quantityOfAllResume - (i + 1)];
                 System.arraycopy(storage, i + 1, tempResume, 0, quantityOfAllResume - (i + 1));
-                // (вар.1)удаляем последнее резюме исходного массива в диапазоне скопированного фрагмента как дубликат, возникающий после сдвига влево
+                // удаляем последнее резюме в исходном массиве диапазона скопированного фрагмента как дубликат, возникающий после сдвига влево
                 storage[quantityOfAllResume - 1] = null;
-                // (вар.2)очищаем исходный массив, начиная с индекса скопированного элемента (чтобы удалить String ссылки массива на ячейки в куче?)
-                // Arrays.fill(storage, i + 1, storage.length - 1, null);
                 // копируем временный массив в исходный на одну позицию левее
                 System.arraycopy(tempResume, 0, storage, i, tempResume.length);
                 break;
