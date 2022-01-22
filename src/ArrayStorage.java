@@ -2,13 +2,19 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
+    private Resume[] storage;
+    private int size;
+
+    public ArrayStorage() {
+        storage = new Resume[10000];
+        size = 0;
+    }
 
     void clear() {
-        int lastResume = size() - 1;
-        for (int i = 0; i <= lastResume; i++) {
+        for (int i = 0; i < size; i++) {
             storage[i] = null;
         }
+        size = 0;
         System.out.println("База резюме очищена.");
     }
 
@@ -17,25 +23,22 @@ public class ArrayStorage {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: save <uuid>");
             return;
         }
-        int indexOfEmptyRecord = size();
-        if (indexOfEmptyRecord == storage.length) {
+        if (size == storage.length) {
             System.out.println("Сохранение невозможно. База резюме заполнена.");
+        // если введенный uuid уникален, то сохраняем резюме в базу
+        } else if (get(r.uuid) == null) {
+            storage[size] = r;
+            size++;
+            System.out.println("Резюме '" + r.uuid + "' сохраненно.");
         } else {
-            // если введенный uuid уникален, то сохраняем резюме в базу
-            if (get(r.uuid) == null) {
-                storage[indexOfEmptyRecord] = r;
-                System.out.println("Резюме '" + r.uuid + "' сохраненно.");
-            } else {
-                System.out.println("Резюме с таким uuid '" + r.uuid + "' уже имеется в базе.");
-            }
+            System.out.println("Резюме с таким uuid '" + r.uuid + "' уже имеется в базе.");
         }
     }
 
     Resume get(String uuid) {
-        for (int i = 0; i < size(); i++) {
-            Resume resumeToBeFound = storage[i];
-            if (uuid.equals(resumeToBeFound.uuid)) {
-                return resumeToBeFound;
+        for (int i = 0; i < size; i++) {
+            if (uuid.equals(storage[i].uuid)) {
+                return storage[i];
             }
         }
         return null;
@@ -48,9 +51,8 @@ public class ArrayStorage {
             return;
         }
         boolean isFound = false;
-        int quantityOfAllResume = size();
         // удаляем резюме, если есть совпадения uuid
-        for (int i = 0; i < quantityOfAllResume; i++) {
+        for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].uuid)) {
                 isFound = true;
                 storage[i] = null;
@@ -59,13 +61,11 @@ public class ArrayStorage {
                 if (i == storage.length - 1) {
                     return;
                 }
-                // копируем часть массива после удаленного элемента во временный массив
-                Resume[] tempResume = new Resume[quantityOfAllResume - (i + 1)];
-                System.arraycopy(storage, i + 1, tempResume, 0, quantityOfAllResume - (i + 1));
-                // удаляем последнее резюме в исходном массиве диапазона скопированного фрагмента как дубликат, возникающий после сдвига влево
-                storage[quantityOfAllResume - 1] = null;
-                // копируем временный массив в исходный на одну позицию левее
-                System.arraycopy(tempResume, 0, storage, i, tempResume.length);
+                // перемещаем ячейки внутри массива со сдвигом влево
+                System.arraycopy(storage, i + 1, storage, i, size - (i + 1));
+                // обнуляем последнюю ячейку диапазона как дубликат
+                storage[size - 1] = null;
+                size--;
                 break;
             }
         }
@@ -78,20 +78,12 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        int quantityOfResume = size();
-        Resume[] tempResume = new Resume[quantityOfResume];
-        System.arraycopy(storage, 0, tempResume, 0, quantityOfResume);
+        Resume[] tempResume = new Resume[size];
+        System.arraycopy(storage, 0, tempResume, 0, size);
         return tempResume;
     }
 
     int size() {
-        int indexOfFirstEmptyRecord = 0;
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] == null) {
-                indexOfFirstEmptyRecord = i;
-                break;
-            }
-        }
-        return indexOfFirstEmptyRecord;
+        return size;
     }
 }
