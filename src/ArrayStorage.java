@@ -2,13 +2,8 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private Resume[] storage;
+    private Resume[] storage = new Resume[10000];;
     private int size;
-
-    public ArrayStorage() {
-        storage = new Resume[10000];
-        size = 0;
-    }
 
     void clear() {
         for (int i = 0; i < size; i++) {
@@ -50,37 +45,33 @@ public class ArrayStorage {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: delete <uuid>");
             return;
         }
-        boolean isFound = false;
         // удаляем резюме, если есть совпадения uuid
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].uuid)) {
-                isFound = true;
-                storage[i] = null;
-                System.out.println("Резюме '" + uuid + "' удалено");
-                // если это последний элемент в массиве, то выходим из метода
+                // если это последний элемент в массиве, то удаляем резюме и выходим из метода
                 if (i == storage.length - 1) {
-                    return;
+                    storage[i] = null;
+                } else {
+                    // перемещаем ячейки внутри массива со сдвигом влево
+                    System.arraycopy(storage, i + 1, storage, i, size - (i + 1));
+                    // обнуляем последнюю ячейку диапазона как дубликат
+                    storage[size - 1] = null;
                 }
-                // перемещаем ячейки внутри массива со сдвигом влево
-                System.arraycopy(storage, i + 1, storage, i, size - (i + 1));
-                // обнуляем последнюю ячейку диапазона как дубликат
-                storage[size - 1] = null;
+                System.out.println("Резюме '" + uuid + "' удалено");
                 size--;
-                break;
+                return;
             }
         }
-        if (!isFound) {
-            System.out.println("Резюме с таким uuid '" + uuid + "' нет в базе.");
-        }
+        System.out.println("Резюме с таким uuid '" + uuid + "' нет в базе.");
     }
 
     /**
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        Resume[] tempResume = new Resume[size];
-        System.arraycopy(storage, 0, tempResume, 0, size);
-        return tempResume;
+        Resume[] resumes = new Resume[size];
+        System.arraycopy(storage, 0, resumes, 0, size);
+        return resumes;
     }
 
     int size() {
