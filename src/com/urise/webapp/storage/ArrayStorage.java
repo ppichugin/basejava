@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private Resume[] storage = new Resume[10000];
+    private Resume[] storage = new Resume[10_000];
     private int size;
 
     public void clear() {
@@ -18,42 +18,43 @@ public class ArrayStorage {
     }
 
     public void update(Resume resume) {
+        String uuid = resume.getUuid();
         /* если такое резюме есть в базе, то обновляем его */
-        int index = findIndex(resume.getUuid());
+        int index = findIndex(uuid);
         if (index >= 0) {
             storage[index] = resume;
-            System.out.println("ОК UPDATE. Резюме '" + storage[index].getUuid() + "' обновлено.");
+            System.out.println("ОК UPDATE. Резюме '" + uuid + "' обновлено.");
         } else {
-            System.out.println("ERROR UPDATE: Резюме '" + resume.getUuid() + "' в базе нет.");
+            System.out.println("ERROR UPDATE: Резюме '" + uuid + "' в базе нет.");
         }
     }
 
     public void save(Resume r) {
-        if (r.getUuid() == null) {
+        String uuid = r.getUuid();
+        if (uuid == null) {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: save <uuid>");
             return;
         }
-        int index = findIndex(r.getUuid());
+        int index = findIndex(uuid);
         if (size == storage.length) {
             System.out.println("ERROR. Сохранение невозможно. База резюме заполнена.");
         } else if (index < 0) {
             /* если введенный uuid уникален, то сохраняем резюме в базу */
             storage[size] = r;
             size++;
-            System.out.println("OK SAVE. Резюме '" + r.getUuid() + "' сохраненно.");
+            System.out.println("OK SAVE. Резюме '" + uuid + "' сохраненно.");
         } else {
-            System.out.println("ERROR SAVE. Резюме с таким uuid '" + r.getUuid() + "' уже имеется в базе.");
+            System.out.println("ERROR SAVE. Резюме с таким uuid '" + uuid + "' уже имеется в базе.");
         }
     }
 
     public Resume get(String uuid) {
         int index = findIndex(uuid);
         if (index >= 0) {
-            System.out.println("OK GET. Резюме с таким uuid '" + storage[index].getUuid() + "' имеется в базе.");
+            System.out.println("OK GET. Резюме с таким uuid '" + uuid + "' имеется в базе.");
             return storage[index];
-        } else {
-            System.out.println("ERROR GET. Резюме с таким uuid '" + uuid + "' нет в базе.");
         }
+        System.out.println("ERROR GET. Резюме с таким uuid '" + uuid + "' нет в базе.");
         return null;
     }
 
@@ -61,21 +62,16 @@ public class ArrayStorage {
         /* если uuid не был введен в команде, то выходим из метода */
         if (uuid == null) {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: delete <uuid>");
-            return;
-        }
-        /* удаляем резюме, если есть совпадения uuid */
-        int index = findIndex(uuid);
-        if (index >= 0) {
-            if (index == storage.length - 1) {
-                storage[index] = null;
-            } else {
+        } else {/* удаляем резюме, если есть совпадения uuid */
+            int index = findIndex(uuid);
+            if (index >= 0) {
                 storage[index] = storage[size - 1];
                 storage[size - 1] = null;
+                size--;
+                System.out.println("OK DELETE. Резюме '" + uuid + "' удалено");
+            } else {
+                System.out.println("ERROR DELETE. Резюме с таким uuid '" + uuid + "' нет в базе.");
             }
-            System.out.println("OK DELETE. Резюме '" + uuid + "' удалено");
-            size--;
-        } else {
-            System.out.println("ERROR DELETE. Резюме с таким uuid '" + uuid + "' нет в базе.");
         }
     }
 
@@ -91,11 +87,13 @@ public class ArrayStorage {
     }
 
     private int findIndex(String uuid) {
+        int index = -1;
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
-                return i;
+                index = i;
+                break;
             }
         }
-        return -1;
+        return index;
     }
 }
