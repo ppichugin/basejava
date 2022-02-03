@@ -7,8 +7,9 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage {
-    private final Resume[] storage = new Resume[10_000];
+public class ArrayStorage implements Storage {
+    public static final int STORAGE_LIMIT = 10_000;
+    private final Resume[] storage = new Resume[STORAGE_LIMIT];
     private int size;
 
     public void clear() {
@@ -17,12 +18,12 @@ public class ArrayStorage {
         System.out.println("ОК. База резюме очищена.");
     }
 
-    public void update(Resume resume) {
-        String uuid = resume.getUuid();
+    public void update(Resume r) {
+        String uuid = r.getUuid();
         /* если такое резюме есть в базе, то обновляем его */
-        int index = findIndex(uuid);
+        int index = getIndex(uuid);
         if (index >= 0) {
-            storage[index] = resume;
+            storage[index] = r;
             System.out.println("ОК UPDATE. Резюме '" + uuid + "' обновлено.");
         } else {
             System.out.println("ERROR UPDATE: Резюме '" + uuid + "' в базе нет.");
@@ -35,8 +36,8 @@ public class ArrayStorage {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: save <uuid>");
             return;
         }
-        int index = findIndex(uuid);
-        if (size == storage.length) {
+        int index = getIndex(uuid);
+        if (size == STORAGE_LIMIT) {
             System.out.println("ERROR. Сохранение невозможно. База резюме заполнена.");
         } else if (index < 0) {
             /* если введенный uuid уникален, то сохраняем резюме в базу */
@@ -49,7 +50,7 @@ public class ArrayStorage {
     }
 
     public Resume get(String uuid) {
-        int index = findIndex(uuid);
+        int index = getIndex(uuid);
         if (index >= 0) {
             System.out.println("OK GET. Резюме с таким uuid '" + uuid + "' имеется в базе.");
             return storage[index];
@@ -63,7 +64,7 @@ public class ArrayStorage {
         if (uuid == null) {
             System.out.println("Вы не ввели uuid. Повторите ввод команды в формате: delete <uuid>");
         } else {/* удаляем резюме, если есть совпадения uuid */
-            int index = findIndex(uuid);
+            int index = getIndex(uuid);
             if (index >= 0) {
                 storage[index] = storage[size - 1];
                 storage[size - 1] = null;
@@ -86,7 +87,7 @@ public class ArrayStorage {
         return size;
     }
 
-    private int findIndex(String uuid) {
+    private int getIndex(String uuid) {
         int index = -1;
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
