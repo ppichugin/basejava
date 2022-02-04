@@ -2,33 +2,10 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
-import java.util.Arrays;
-
 /**
  * Array based storage for Resumes
  */
 public class ArrayStorage extends AbstractArrayStorage {
-    public static final int STORAGE_LIMIT = 10_000;
-    private final Resume[] storage = new Resume[STORAGE_LIMIT];
-    private int size;
-
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-        System.out.println("ОК. База резюме очищена.");
-    }
-
-    public void update(Resume r) {
-        String uuid = r.getUuid();
-        /* если такое резюме есть в базе, то обновляем его */
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            storage[index] = r;
-            System.out.println("ОК UPDATE. Резюме '" + uuid + "' обновлено.");
-        } else {
-            System.out.println("ERROR UPDATE: Резюме '" + uuid + "' в базе нет.");
-        }
-    }
 
     public void save(Resume r) {
         String uuid = r.getUuid();
@@ -64,13 +41,6 @@ public class ArrayStorage extends AbstractArrayStorage {
                 System.out.println("ERROR DELETE. Резюме с таким uuid '" + uuid + "' нет в базе.");
             }
         }
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
     }
 
     protected int getIndex(String uuid) {
