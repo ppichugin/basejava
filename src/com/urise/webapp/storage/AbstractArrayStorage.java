@@ -12,44 +12,87 @@ public abstract class AbstractArrayStorage implements Storage {
     protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size;
 
-    public void clear() {
+    public final void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
-        System.out.println("ОК. База резюме очищена.");
+        System.out.println("OK. Storage of resume cleared.");
     }
 
-    public void update(Resume r) {
+    public final void update(Resume r) {
         String uuid = r.getUuid();
-        /* если такое резюме есть в базе, то обновляем его */
         int index = getIndex(uuid);
         if (index >= 0) {
             storage[index] = r;
-            System.out.println("ОК UPDATE. Резюме '" + uuid + "' обновлено.");
+            System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
         } else {
-            System.out.println("ERROR UPDATE: Резюме '" + uuid + "' в базе нет.");
+            System.out.println("ERROR UPDATE: Resume '" + uuid + "' not found.");
         }
     }
 
-    public Resume get(String uuid) {
+    public final void save(Resume r) {
+        String uuid = r.getUuid();
+        /* if uuid was not entered in command, exit from method */
+        if (uuid == null) {
+            System.out.println("uuid was not entered. Please try again: save <uuid>");
+            return;
+        }
+        int indexOfResume = getIndex(uuid);
+        if (size == STORAGE_LIMIT) {
+            System.out.println("ERROR. Storage is overloaded.");
+        } else if (indexOfResume < 0) {
+            /* if resume not found (i.e. unique), prepare space in storage & save resume */
+            int placeToSave = findPlaceToSave(indexOfResume);
+            prepareStorageToInsert(indexOfResume);
+            storage[placeToSave] = r;
+            size++;
+            System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
+        } else {
+            System.out.println("ERROR SAVE. Resume '" + uuid + "' already exists.");
+        }
+
+    }
+
+    public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index >= 0) {
-            System.out.println("OK GET. Резюме с таким uuid '" + uuid + "' имеется в базе.");
+            System.out.println("OK GET. Resume '" + uuid + "' exists.");
             return storage[index];
         }
-        System.out.println("ERROR GET. Резюме с таким uuid '" + uuid + "' нет в базе.");
+        System.out.println("ERROR GET. Resume '" + uuid + "' doesn't exist.");
         return null;
+    }
+
+    public final void delete(String uuid) {
+        /* if uuid was not entered in command, exit from method */
+        if (uuid == null) {
+            System.out.println("uuid was not entered. Please try again: delete <uuid>");
+        } else {
+            int index = getIndex(uuid);
+            /* if resume exists, then delete it */
+            if (index >= 0) {
+                rearrangeStorageForDeletion(index);
+                storage[size - 1] = null;
+                size--;
+                System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
+            } else {
+                System.out.println("ERROR DELETE. Resume '" + uuid + "' doesn't exist.");
+            }
+        }
     }
 
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    public Resume[] getAll() {
+    public final Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
-    public int size() {
+    public final int size() {
         return size;
     }
 
     protected abstract int getIndex(String uuid);
+    protected abstract int findPlaceToSave(int index);
+    protected abstract void prepareStorageToInsert(int index);
+    protected abstract void rearrangeStorageForDeletion(int index);
 }
