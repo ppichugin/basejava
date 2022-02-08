@@ -12,7 +12,7 @@ public abstract class AbstractArrayStorage implements Storage {
     protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size;
 
-    public final void clear() {
+    public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
         System.out.println("OK. Storage of resume cleared.");
@@ -41,9 +41,7 @@ public abstract class AbstractArrayStorage implements Storage {
             System.out.println("ERROR. Storage is overloaded.");
         } else if (indexOfResume < 0) {
             /* if resume not found (i.e. unique), prepare space in storage & save resume */
-            int placeToSave = findPlaceToSave(indexOfResume);
-            prepareStorageToInsert(indexOfResume);
-            storage[placeToSave] = r;
+            saveToStorage(indexOfResume, r);
             size++;
             System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
         } else {
@@ -70,8 +68,7 @@ public abstract class AbstractArrayStorage implements Storage {
             int index = getIndex(uuid);
             /* if resume exists, then delete it */
             if (index >= 0) {
-                rearrangeStorageForDeletion(index);
-                storage[size - 1] = null;
+                deleteAtStorage(index);
                 size--;
                 System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
             } else {
@@ -83,16 +80,15 @@ public abstract class AbstractArrayStorage implements Storage {
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    public final Resume[] getAll() {
+    public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
-    public final int size() {
+    public int size() {
         return size;
     }
 
     protected abstract int getIndex(String uuid);
-    protected abstract int findPlaceToSave(int index);
-    protected abstract void prepareStorageToInsert(int index);
-    protected abstract void rearrangeStorageForDeletion(int index);
+    protected abstract void saveToStorage(int index, Resume resume);
+    protected abstract void deleteAtStorage(int index);
 }

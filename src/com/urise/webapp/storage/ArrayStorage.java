@@ -1,5 +1,7 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.model.Resume;
+
 /**
  * Array based storage for Resumes
  */
@@ -18,20 +20,16 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int findPlaceToSave(int index) {
+    protected void saveToStorage(int index, Resume resume) {
         /* resume to be saved to the last free cell at unsorted storage */
         index = size;
-        return index;
+        storage[index] = resume;
     }
 
     @Override
-    protected void rearrangeStorageForDeletion(int index) {
-        /* rewrite found resume with the last item from storage */
+    protected void deleteAtStorage(int index) {
+        /* rewrites found resume with the last item from storage */
         storage[index] = storage[size - 1];
-    }
-
-    @Override
-    protected void prepareStorageToInsert(int index) {
-        /* nothing to-do special with unsorted storage */
+        storage[size - 1] = null;
     }
 }

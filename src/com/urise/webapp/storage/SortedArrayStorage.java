@@ -14,21 +14,17 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected int findPlaceToSave(int index) {
-        /* returns appropriate index to save at sorted storage */
+    protected void saveToStorage(int index, Resume resume) {
+        /* saves resume at sorted storage with prior preparation of storage */
         index = -index - 1;
-        return index;
-    }
-
-    @Override
-    protected void rearrangeStorageForDeletion(int index) {
-        /* move resumes from next to previous starting by index+1 */
-        System.arraycopy(storage, index + 1, storage, index, size - (index + 1));
-    }
-
-    @Override
-    protected void prepareStorageToInsert(int index) {
-        /* free up space to insert resume in sorted order */
         System.arraycopy(storage, index, storage, index + 1, size - index);
+        storage[index] = resume;
+    }
+
+    @Override
+    protected void deleteAtStorage(int index) {
+        /* deletes found resume at (index), by moving resumes to the left starting from (index + 1) */
+        System.arraycopy(storage, index + 1, storage, index, size - (index + 1));
+        storage[size - 1] = null;
     }
 }
