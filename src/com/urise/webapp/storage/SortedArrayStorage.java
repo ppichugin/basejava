@@ -25,6 +25,5 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     protected void deleteAtStorage(int index) {
         /* deletes found resume at (index), by moving resumes to the left starting from (index + 1) */
         System.arraycopy(storage, index + 1, storage, index, size - (index + 1));
-        storage[size - 1] = null;
     }
 }
