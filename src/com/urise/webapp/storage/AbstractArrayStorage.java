@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -25,7 +28,7 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[index] = r;
             System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
         } else {
-            System.out.println("ERROR UPDATE: Resume '" + uuid + "' not found.");
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -38,14 +41,14 @@ public abstract class AbstractArrayStorage implements Storage {
         }
         int indexOfResume = getIndex(uuid);
         if (size == STORAGE_LIMIT) {
-            System.out.println("ERROR. Storage is overloaded.");
+            throw new StorageException("Storage overflow", r.getUuid());
         } else if (indexOfResume < 0) {
             /* if resume not found (i.e. unique), prepare space in storage & save resume */
-            saveToStorage(indexOfResume, r);
+            saveToStorage(indexOfResume, r); //insertElement(r, index);
             size++;
             System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
         } else {
-            System.out.println("ERROR SAVE. Resume '" + uuid + "' already exists.");
+            throw new ExistStorageException(r.getUuid());
         }
 
     }
@@ -56,8 +59,7 @@ public abstract class AbstractArrayStorage implements Storage {
             System.out.println("OK GET. Resume '" + uuid + "' exists.");
             return storage[index];
         }
-        System.out.println("ERROR GET. Resume '" + uuid + "' doesn't exist.");
-        return null;
+        throw new NotExistStorageException(uuid);
     }
 
     public final void delete(String uuid) {
@@ -68,12 +70,12 @@ public abstract class AbstractArrayStorage implements Storage {
             int index = getIndex(uuid);
             /* if resume exists, then delete it */
             if (index >= 0) {
-                deleteAtStorage(index);
+                deleteAtStorage(index); //fillDeletedElement(index);
                 storage[size - 1] = null;
                 size--;
                 System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
             } else {
-                System.out.println("ERROR DELETE. Resume '" + uuid + "' doesn't exist.");
+                throw new NotExistStorageException(uuid);
             }
         }
     }

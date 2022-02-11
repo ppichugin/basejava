@@ -8,14 +8,14 @@ public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
     protected int getIndex(String uuid) {
-        Resume searchKey = new Resume();
-        searchKey.setUuid(uuid);
+        Resume searchKey = new Resume(uuid);
         return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 
     @Override
     protected void saveToStorage(int index, Resume resume) {
-        /* saves resume at sorted storage with prior preparation of storage */
+        /* saves resume at sorted storage with prior preparation of storage
+        * http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239 */
         index = -index - 1;
         System.arraycopy(storage, index, storage, index + 1, size - index);
         storage[index] = resume;
