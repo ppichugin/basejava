@@ -24,12 +24,11 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void update(Resume r) {
         String uuid = r.getUuid();
         int index = getIndex(uuid);
-        if (index >= 0) {
-            storage[index] = r;
-            System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
-        } else {
+        if (index < 0) {
             throw new NotExistStorageException(uuid);
         }
+        storage[index] = r;
+        System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
     }
 
     public final void save(Resume r) {
@@ -40,17 +39,16 @@ public abstract class AbstractArrayStorage implements Storage {
             return;
         }
         int indexOfResume = getIndex(uuid);
-        if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        } else if (indexOfResume < 0) {
-            /* if resume not found (i.e. unique), prepare space in storage & save resume */
-            saveToStorage(indexOfResume, r); //insertElement(r, index);
-            size++;
-            System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
-        } else {
-            throw new ExistStorageException(r.getUuid());
+        if (size >= STORAGE_LIMIT) {
+            throw new StorageException("Storage overflow", uuid);
         }
-
+        if (indexOfResume >= 0) {
+            throw new ExistStorageException(uuid);
+        }
+        /* if resume not found (i.e. unique), prepare space in storage & save resume */
+        saveToStorage(indexOfResume, r); //insertElement(r, index);
+        size++;
+        System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
     }
 
     public final Resume get(String uuid) {
@@ -66,18 +64,17 @@ public abstract class AbstractArrayStorage implements Storage {
         /* if uuid was not entered in command, exit from method */
         if (uuid == null) {
             System.out.println("uuid was not entered. Please try again: delete <uuid>");
-        } else {
-            int index = getIndex(uuid);
-            /* if resume exists, then delete it */
-            if (index >= 0) {
-                deleteAtStorage(index); //fillDeletedElement(index);
-                storage[size - 1] = null;
-                size--;
-                System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
-            } else {
-                throw new NotExistStorageException(uuid);
-            }
+            return;
         }
+        int index = getIndex(uuid);
+        /* if resume exists, then delete it */
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        deleteAtStorage(index); //fillDeletedElement(index);
+        storage[size - 1] = null;
+        size--;
+        System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
     }
 
     /**
