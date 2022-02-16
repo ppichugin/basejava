@@ -31,11 +31,6 @@ public abstract class AbstractArrayStorageTest {
     public void clear() {
         storage.clear();
         assertEquals(0, storage.size());
-//        /* variant with Reflection */
-//        Field size = storage.getClass().getSuperclass().getDeclaredField("size");
-//        size.setAccessible(true);
-//        Object obj = size.get(storage);
-//        Assert.assertEquals(0, obj);
     }
 
     @Test
@@ -110,10 +105,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() {
-        Resume[] storageReference = new Resume[]{
-                new Resume(UUID_1),
-                new Resume(UUID_2),
-                new Resume(UUID_3)};
+        Resume[] storageReference = new Resume[]{new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
         Resume[] storageAll = storage.getAll();
         assertArrayEquals(storageReference, storageAll);
     }
