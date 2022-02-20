@@ -18,7 +18,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void saveToStorage(int index, Resume resume) {
+    protected void saveToStorage(Resume resume, int index) {
         /* resume to be saved to the last free cell at unsorted storage */
         storage[size] = resume;
     }

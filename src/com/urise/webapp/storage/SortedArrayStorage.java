@@ -13,7 +13,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void saveToStorage(int index, Resume resume) {
+    protected void saveToStorage(Resume resume, int index) {
         /* saves resume at sorted storage with prior preparation of storage
         * http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239 */
         index = -index - 1;

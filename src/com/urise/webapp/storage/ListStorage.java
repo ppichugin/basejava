@@ -3,62 +3,54 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * List based storage for Resumes
  */
 public class ListStorage extends AbstractStorage {
 
-    protected final ArrayList<Resume> list;
-
-    public ListStorage() {
-        list = new ArrayList<>();
-    }
+    private final List<Resume> list = new ArrayList<>();
 
     @Override
-    protected void clearStorageSpecific() {
+    public void clear() {
         list.clear();
-        list.trimToSize();
+        ((ArrayList<Resume>)list).trimToSize();
+        super.clear();
     }
 
     @Override
-    protected void updateStorageSpecific(int index, Resume r) {
+    protected void updateElement(Resume r, int index) {
         list.set(index, r);
     }
 
     @Override
-    protected void overflowStorageCheckup(int index, String uuid) {
-        // ArrayList is conditionally unlimited
-    }
-
-    @Override
-    protected void saveStorageSpecific(int index, Resume r) {
+    protected void insertElement(Resume r, int index) {
         list.add(r);
     }
 
     @Override
-    protected Resume getStorageSpecific(int index) {
+    protected Resume getElement(int index) {
         return list.get(index);
     }
 
     @Override
-    protected void deleteStorageSpecific(int index) {
+    protected void removeElement(int index) {
         list.remove(index);
-        list.trimToSize();
+        ((ArrayList<Resume>)list).trimToSize();
     }
 
     @Override
-    protected Resume[] getAllStorageSpecific() {
+    public Resume[] getAll() {
         return list.toArray(new Resume[0]);
     }
 
     @Override
-    protected int sizeStorageSpecific() {
+    public int size() {
         return list.size();
     }
 
     protected int getIndex(String uuid) {
-        Resume searchKey = new Resume(uuid);
-        return list.indexOf(searchKey);
+        return list.indexOf(new Resume(uuid));
     }
 }

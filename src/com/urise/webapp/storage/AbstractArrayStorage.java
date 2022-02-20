@@ -14,52 +14,55 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected int size;
 
     @Override
-    protected void clearStorageSpecific() {
+    public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
+        super.clear();
     }
 
     @Override
-    protected void updateStorageSpecific(int index, Resume r) {
+    protected void updateElement(Resume r, int index) {
         storage[index] = r;
     }
 
     @Override
-    protected void overflowStorageCheckup(int indexOfResume, String uuid) {
+    protected void insertElement(Resume r, int indexOfResume) {
+        overflowStorageCheckup(r.getUuid());
+        saveToStorage(r, indexOfResume); //insertElement(r, index);
+        size++;
+    }
+
+    private void overflowStorageCheckup(String uuid) {
         if (size >= STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", uuid);
         }
     }
 
     @Override
-    protected void saveStorageSpecific(int indexOfResume, Resume r) {
-        saveToStorage(indexOfResume, r); //insertElement(r, index);
-        size++;
-    }
-
-    @Override
-    protected Resume getStorageSpecific(int index) {
+    protected Resume getElement(int index) {
         return storage[index];
     }
 
     @Override
-    protected void deleteStorageSpecific(int index) {
-        deleteAtStorage(index); //fillDeletedElement(index);
+    protected void removeElement(int index) {
+        deleteAtStorage(index);
         storage[size - 1] = null;
         size--;
     }
 
     @Override
-    protected Resume[] getAllStorageSpecific() {
+    public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
     @Override
-    protected int sizeStorageSpecific() {
+    public int size() {
         return size;
     }
 
     protected abstract int getIndex(String uuid);
-    protected abstract void saveToStorage(int index, Resume resume);
+
+    protected abstract void saveToStorage(Resume resume, int index);
+
     protected abstract void deleteAtStorage(int index);
 }
