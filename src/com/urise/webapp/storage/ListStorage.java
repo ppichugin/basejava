@@ -20,24 +20,23 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateElement(Resume r, int index) {
+    protected void updateResume(Resume r, int index) {
         list.set(index, r);
     }
 
     @Override
-    protected void insertElement(Resume r, int index) {
+    protected void insertResume(Resume r, int index) {
         list.add(r);
     }
 
     @Override
-    protected Resume getElement(int index) {
+    protected Resume getResume(int index) {
         return list.get(index);
     }
 
     @Override
-    protected void removeElement(int index) {
+    protected void removeResume(int index) {
         list.remove(index);
-        ((ArrayList<Resume>)list).trimToSize();
     }
 
     @Override

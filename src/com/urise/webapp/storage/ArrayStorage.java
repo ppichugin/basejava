@@ -18,13 +18,13 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void saveToStorage(Resume resume, int index) {
+    protected void saveToArray(Resume resume, int index) {
         /* resume to be saved to the last free cell at unsorted storage */
         storage[size] = resume;
     }
 
     @Override
-    protected void deleteAtStorage(int index) {
+    protected void deleteFromArray(int index) {
         /* rewrites found resume with the last item from storage */
         storage[index] = storage[size - 1];
     }

@@ -13,7 +13,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void saveToStorage(Resume resume, int index) {
+    protected void saveToArray(Resume resume, int index) {
         /* saves resume at sorted storage with prior preparation of storage
         * http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239 */
         index = -index - 1;
@@ -22,7 +22,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void deleteAtStorage(int index) {
+    protected void deleteFromArray(int index) {
         /* deletes found resume at (index), by moving resumes to the left starting from (index + 1) */
         System.arraycopy(storage, index + 1, storage, index, size - (index + 1));
     }
