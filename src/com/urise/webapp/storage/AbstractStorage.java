@@ -4,68 +4,84 @@ import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 
+/**
+ * Abstract storage for Resumes
+ */
 public abstract class AbstractStorage implements Storage {
 
     public void clear() {
-        System.out.println("OK. Storage of resume cleared.");
+        writeConfirmationToConsole("CLEARED", "");
+    }
+
+    private void writeConfirmationToConsole(String status, String uuid) {
+        if (status == null) return;
+        switch (status) {
+            case "CLEARED" -> System.out.println("OK. Storage of resume cleared.");
+            case "UPDATED" -> System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
+            case "SAVED" -> System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
+            case "EXIST" -> System.out.println("OK GET. Resume '" + uuid + "' exists.");
+            case "DELETED" -> System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
+            default -> System.out.println();
+        }
     }
 
     public final void update(Resume r) {
         String uuid = r.getUuid();
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        updateResume(r, index);
-        System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
+        Object searchKey = getKeyForNotExistedResume(uuid);
+        updateResume(r, searchKey);
+        writeConfirmationToConsole("UPDATED", uuid);
     }
 
-    protected abstract int getIndex(String uuid);
+    private Object getKeyForNotExistedResume(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (!isResumeExist(searchKey)) throw new NotExistStorageException(uuid);
+        return searchKey;
+    }
 
-    protected abstract void updateResume(Resume r, int index);
+    protected abstract Object getSearchKey(String uuid); // @return UUID or INDEX
+
+    protected abstract void updateResume(Resume r, Object searchKey);
 
     public final void save(Resume r) {
         String uuid = r.getUuid();
-        /* if uuid was not entered in command, exit from method */
-        if (uuid == null) {
-            System.out.println("uuid was not entered. Please try again: save <uuid>");
-            return;
-        }
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            throw new ExistStorageException(uuid);
-        }
-        insertResume(r, index);
-        System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
+        if (isUuidNull(uuid)) return;
+        Object searchKey = getKeyForExistedResume(uuid);
+        insertResume(r, searchKey);
+        writeConfirmationToConsole("SAVED", uuid);
     }
 
-    protected abstract void insertResume(Resume r, int index);
+    private boolean isUuidNull(String uuid) {
+        if (uuid == null) {
+            System.out.println("uuid was not entered. Please try again.");
+            return true;
+        }
+        return false;
+    }
+
+    private Object getKeyForExistedResume(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (isResumeExist(searchKey)) throw new ExistStorageException(uuid);
+        return searchKey;
+    }
+
+    protected abstract boolean isResumeExist(Object searchKey);
+
+    protected abstract void insertResume(Resume r, Object searchKey);
 
     public final Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            System.out.println("OK GET. Resume '" + uuid + "' exists.");
-            return getResume(index, uuid);
-        }
-        throw new NotExistStorageException(uuid);
+        Object searchKey = getKeyForNotExistedResume(uuid);
+        writeConfirmationToConsole("EXIST", uuid);
+        return getResume(searchKey);
     }
 
-    protected abstract Resume getResume(int index, String uuid);
+    protected abstract Resume getResume(Object searchKey);
 
     public final void delete(String uuid) {
-        /* if uuid was not entered in command, exit from method */
-        if (uuid == null) {
-            System.out.println("uuid was not entered. Please try again: delete <uuid>");
-            return;
-        }
-        int index = getIndex(uuid);
-        /* if resume exists, then delete it */
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        removeResume(index, uuid);
-        System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
+        if (isUuidNull(uuid)) return;
+        Object searchKey = getKeyForNotExistedResume(uuid);
+        removeResume(searchKey);
+        writeConfirmationToConsole("DELETED", uuid);
     }
 
-    protected abstract void removeResume(int index, String uuid);
+    protected abstract void removeResume(Object searchKey);
 }

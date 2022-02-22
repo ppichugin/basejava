@@ -4,10 +4,13 @@ import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 
+/**
+ * Sorted Array
+ */
 public class SortedArrayStorage extends AbstractArrayStorage {
 
-    @Override
-    protected int getIndex(String uuid) {
+    @Override // @return INDEX
+    protected Integer getSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
         return Arrays.binarySearch(storage, 0, size, searchKey);
     }
@@ -15,7 +18,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
     protected void saveToArray(Resume resume, int index) {
         /* saves resume at sorted storage with prior preparation of storage
-        * http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239 */
+         * http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239 */
         index = -index - 1;
         System.arraycopy(storage, index, storage, index + 1, size - index);
         storage[index] = resume;

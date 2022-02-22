@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * List based storage for Resumes
+ * ArrayList based storage for Resumes
  */
 public class ListStorage extends AbstractStorage {
 
@@ -15,28 +15,38 @@ public class ListStorage extends AbstractStorage {
     @Override
     public void clear() {
         list.clear();
-        ((ArrayList<Resume>)list).trimToSize();
+        ((ArrayList<Resume>) list).trimToSize();
         super.clear();
     }
 
     @Override
-    protected void updateResume(Resume r, int index) {
-        list.set(index, r);
+    protected void updateResume(Resume r, Object index) {
+        list.set((Integer) index, r);
     }
 
     @Override
-    protected void insertResume(Resume r, int index) {
+    protected void insertResume(Resume r, Object searchKey) {
         list.add(r);
     }
 
     @Override
-    protected Resume getResume(int index, String uuid) {
-        return list.get(index);
+    protected Resume getResume(Object index) {
+        return list.get((Integer) index);
     }
 
     @Override
-    protected void removeResume(int index, String uuid) {
-        list.remove(index);
+    protected void removeResume(Object index) {
+        list.remove((int) (Integer) index);
+    }
+
+    @Override // @return INDEX
+    protected Integer getSearchKey(String uuid) {
+        return list.indexOf(new Resume(uuid));
+    }
+
+    @Override
+    protected boolean isResumeExist(Object index) {
+        return (Integer) index >= 0;
     }
 
     @Override
@@ -47,9 +57,5 @@ public class ListStorage extends AbstractStorage {
     @Override
     public int size() {
         return list.size();
-    }
-
-    protected int getIndex(String uuid) {
-        return list.indexOf(new Resume(uuid));
     }
 }
