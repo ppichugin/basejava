@@ -20,4 +20,24 @@ public interface Storage {
     Resume[] getAll();
 
     int size();
+
+    default void clearedOk() {
+        System.out.println("OK. Storage of resume cleared.");
+    }
+
+    default void updatedOk(String uuid) {
+        System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
+    }
+
+    default void savedOk(String uuid) {
+        System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
+    }
+
+    default void exists(String uuid) {
+        System.out.println("OK GET. Resume '" + uuid + "' exists.");
+    }
+
+    default void deletedOk(String uuid) {
+        System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
+    }
 }
