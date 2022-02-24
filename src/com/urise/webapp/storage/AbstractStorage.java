@@ -9,10 +9,6 @@ import com.urise.webapp.model.Resume;
  */
 public abstract class AbstractStorage implements Storage {
 
-    public void clear() {
-        Storage.super.clear(); // prints confirmation message to console
-    }
-
     public final void update(Resume r) {
         String uuid = r.getUuid();
         Object searchKey = getKeyForExistedResume(uuid);
@@ -58,7 +54,7 @@ public abstract class AbstractStorage implements Storage {
 
     public final Resume get(String uuid) {
         Object searchKey = getKeyForExistedResume(uuid);
-        Storage.super.get(uuid);
+        System.out.println("OK GET. Resume '" + uuid + "' exists.");
         return getResume(searchKey);
     }
 

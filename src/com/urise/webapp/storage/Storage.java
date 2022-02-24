@@ -19,10 +19,7 @@ public interface Storage {
         System.out.println("OK SAVE. Resume '" + r.getUuid() + "' saved.");
     }
 
-    default Resume get(String uuid) {
-        System.out.println("OK GET. Resume '" + uuid + "' exists.");
-        return null;
-    }
+    Resume get(String uuid);
 
     default void delete(String uuid) {
         System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
