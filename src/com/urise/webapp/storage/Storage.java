@@ -7,37 +7,28 @@ import com.urise.webapp.model.Resume;
  */
 public interface Storage {
 
-    void clear();
+    default void clear() {
+        System.out.println("OK. Storage of resume cleared.");
+    }
 
-    void update(Resume r);
+    default void update(Resume r) {
+        System.out.println("OK UPDATE. Resume '" + r.getUuid() + "' updated.");
+    }
 
-    void save(Resume r);
+    default void save(Resume r) {
+        System.out.println("OK SAVE. Resume '" + r.getUuid() + "' saved.");
+    }
 
-    Resume get(String uuid);
+    default Resume get(String uuid) {
+        System.out.println("OK GET. Resume '" + uuid + "' exists.");
+        return null;
+    }
 
-    void delete(String uuid);
+    default void delete(String uuid) {
+        System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
+    }
 
     Resume[] getAll();
 
     int size();
-
-    default void clearedOk() {
-        System.out.println("OK. Storage of resume cleared.");
-    }
-
-    default void updatedOk(String uuid) {
-        System.out.println("OK UPDATE. Resume '" + uuid + "' updated.");
-    }
-
-    default void savedOk(String uuid) {
-        System.out.println("OK SAVE. Resume '" + uuid + "' saved.");
-    }
-
-    default void exists(String uuid) {
-        System.out.println("OK GET. Resume '" + uuid + "' exists.");
-    }
-
-    default void deletedOk(String uuid) {
-        System.out.println("OK DELETE. Resume '" + uuid + "' deleted.");
-    }
 }

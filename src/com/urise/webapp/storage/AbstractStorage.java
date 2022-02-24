@@ -10,14 +10,14 @@ import com.urise.webapp.model.Resume;
 public abstract class AbstractStorage implements Storage {
 
     public void clear() {
-        clearedOk();
+        Storage.super.clear(); // prints confirmation message to console
     }
 
     public final void update(Resume r) {
         String uuid = r.getUuid();
         Object searchKey = getKeyForExistedResume(uuid);
         updateResume(r, searchKey);
-        updatedOk(uuid);
+        Storage.super.update(r); // prints confirmation message to console
     }
 
     private Object getKeyForExistedResume(String uuid) {
@@ -35,7 +35,7 @@ public abstract class AbstractStorage implements Storage {
         if (isNull(uuid)) return;
         Object searchKey = getKeyForNotExistedResume(uuid);
         insertResume(r, searchKey);
-        savedOk(uuid);
+        Storage.super.save(r);
     }
 
     private boolean isNull(String uuid) {
@@ -58,7 +58,7 @@ public abstract class AbstractStorage implements Storage {
 
     public final Resume get(String uuid) {
         Object searchKey = getKeyForExistedResume(uuid);
-        exists(uuid);
+        Storage.super.get(uuid);
         return getResume(searchKey);
     }
 
@@ -68,7 +68,7 @@ public abstract class AbstractStorage implements Storage {
         if (isNull(uuid)) return;
         Object searchKey = getKeyForExistedResume(uuid);
         removeResume(searchKey);
-        deletedOk(uuid);
+        Storage.super.delete(uuid);
     }
 
     protected abstract void removeResume(Object searchKey);
