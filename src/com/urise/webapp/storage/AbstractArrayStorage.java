@@ -3,7 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Array based storage for Resumes
@@ -56,8 +56,10 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
+    public List<Resume> getAllSorted() {
+        List<Resume> list = new ArrayList<>(Arrays.asList(Arrays.copyOf(storage, size)));
+        list.sort(COMPARATOR_FULLNAME_THEN_UUID);
+        return list;
     }
 
     @Override

@@ -4,10 +4,13 @@ import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 
+import java.util.Comparator;
+
 /**
  * Abstract storage for Resumes
  */
 public abstract class AbstractStorage implements Storage {
+    public static final Comparator<Resume> COMPARATOR_FULLNAME_THEN_UUID = Comparator.comparing(Resume::getFullname).thenComparing(Resume::getUuid);
 
     public final void update(Resume r) {
         String uuid = r.getUuid();
