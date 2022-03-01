@@ -2,7 +2,6 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,10 +9,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public abstract class AbstractStorageTest {
-    private final Storage storage;
+    protected final Storage storage;
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
@@ -43,20 +43,20 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume resumeNew = R1;
+        Resume resumeNew = new Resume(UUID_1, "Ivanov");
         storage.update(resumeNew);
         Resume resumeUpdated = storage.get(UUID_1);
-        assertSame(resumeNew, resumeUpdated);
+        assertEquals(resumeNew, resumeUpdated);
     }
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
-        storage.update(new Resume());
+        storage.update(new Resume("dummy"));
     }
 
     @Test
     public void save() {
-        final Resume resumeNew = R4Dummy;
+        final Resume resumeNew = new Resume(UUID_4, "dummy");
         storage.save(resumeNew);
         assertEquals(4, storage.size());
         final Resume resumeObtained = storage.get(UUID_4);
@@ -68,22 +68,9 @@ public abstract class AbstractStorageTest {
         storage.save(R1);
     }
 
-    @Test(expected = StorageException.class)
-    public void saveStorageOverflow() {
-        int length = AbstractArrayStorage.STORAGE_LIMIT;
-        try {
-            for (int i = 3; i < length; i++) {
-                storage.save(new Resume("uuid" + (i + 1), ""));
-            }
-        } catch (StorageException e) {
-            fail("Overflow occurred prematurely");
-        }
-        storage.save(new Resume());
-    }
-
     @Test
     public void get() {
-        final Resume resumeExpected = R4Dummy;
+        final Resume resumeExpected = new Resume(UUID_4, "dummy");
         storage.save(resumeExpected);
         final Resume resumeReceived = storage.get(UUID_4);
         assertSame(resumeExpected, resumeReceived);

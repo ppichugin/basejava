@@ -8,7 +8,9 @@ import java.util.*;
  * HashMap based storage for Resumes
  */
 public class MapUuidStorage extends AbstractStorage {
-
+    /**
+     * HashMap realisation with key map - as uuid, searchKey - as uuid
+     */
     private final Map<String, Resume> map = new HashMap<>();
 
     @Override
@@ -37,7 +39,10 @@ public class MapUuidStorage extends AbstractStorage {
         map.remove((String) uuid);
     }
 
-    @Override // @return UUID
+    /**
+     * @return UUID
+     */
+    @Override
     protected String getSearchKey(String uuid) {
         return uuid;
     }
@@ -48,10 +53,8 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume> list = new ArrayList<>(map.values());
-        list.sort(COMPARATOR_FULLNAME_THEN_UUID);
-        return list;
+    protected List<Resume> getList() {
+        return new ArrayList<>(map.values());
     }
 
     @Override

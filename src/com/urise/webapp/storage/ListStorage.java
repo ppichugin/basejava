@@ -39,7 +39,8 @@ public class ListStorage extends AbstractStorage {
         list.remove((int) (Integer) index);
     }
 
-    @Override // @return INDEX
+    /* @return INDEX */
+    @Override
     protected Integer getSearchKey(String uuid) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getUuid().equals(uuid)) {
@@ -55,8 +56,7 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        list.sort(COMPARATOR_FULLNAME_THEN_UUID);
+    protected List<Resume> getList() {
         return list;
     }
 

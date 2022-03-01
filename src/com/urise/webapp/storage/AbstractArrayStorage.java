@@ -56,10 +56,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume> list = new ArrayList<>(Arrays.asList(Arrays.copyOf(storage, size)));
-        list.sort(COMPARATOR_FULLNAME_THEN_UUID);
-        return list;
+    protected List<Resume> getList() {
+        return new ArrayList<>(Arrays.asList(Arrays.copyOf(storage, size)));
     }
 
     @Override
@@ -67,7 +65,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return size;
     }
 
-    @Override // Arrays use INDEX
+    /* Arrays use INDEX */
+    @Override
     protected abstract Integer getSearchKey(String uuid);
 
     protected abstract void saveToArray(Resume resume, int index);

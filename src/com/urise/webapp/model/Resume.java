@@ -7,38 +7,24 @@ import java.util.UUID;
  */
 public class Resume {
     private final String uuid;
-    private final String fullname;
+    private final String fullName;
 
-    public Resume() {
-        this.uuid = UUID.randomUUID().toString();
-        this.fullname = "";
+    public Resume(String fullName) {
+        this(UUID.randomUUID().toString(), fullName);
     }
 
-    public Resume(String uuid, String fullname) {
+    public Resume(String uuid, String fullName) {
         this.uuid = uuid;
-        this.fullname = fullname;
+        this.fullName = fullName;
     }
 
     public String getUuid() {
         return uuid;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFullName() {
+        return fullName;
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Resume resume = (Resume) o;
-//        return uuid.equals(resume.uuid);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return uuid.hashCode();
-//    }
 
     // re-assigned due to additional field 'fullname' added
     @Override
@@ -47,14 +33,14 @@ public class Resume {
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
         if (!uuid.equals(resume.uuid)) return false;
-        return fullname.equals(resume.fullname);
+        return fullName.equals(resume.fullName);
     }
 
     // re-assigned for proper work of HashMap, due to additional field 'fullname' added
     @Override
     public int hashCode() {
         int result = uuid.hashCode();
-        result = 31 * result + fullname.hashCode();
+        result = 31 * result + fullName.hashCode();
         return result;
     }
 
@@ -62,7 +48,7 @@ public class Resume {
     public String toString() {
         return "Resume{" +
                 "uuid='" + uuid + '\'' +
-                ", fullname='" + fullname + '\'' +
+                ", fullname='" + fullName + '\'' +
                 '}';
     }
 }
