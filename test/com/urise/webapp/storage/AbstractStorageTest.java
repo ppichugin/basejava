@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 public abstract class AbstractStorageTest {
@@ -21,7 +22,6 @@ public abstract class AbstractStorageTest {
     private static final Resume R1 = new Resume(UUID_1, "Ivanov");
     private static final Resume R2 = new Resume(UUID_2, "Petrov");
     private static final Resume R3 = new Resume(UUID_3, "Petrov");
-    private static final Resume R4Dummy = new Resume(UUID_4, "dummy");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -46,7 +46,7 @@ public abstract class AbstractStorageTest {
         Resume resumeNew = new Resume(UUID_1, "Ivanov");
         storage.update(resumeNew);
         Resume resumeUpdated = storage.get(UUID_1);
-        assertEquals(resumeNew, resumeUpdated);
+        assertSame(resumeNew, resumeUpdated);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -60,7 +60,7 @@ public abstract class AbstractStorageTest {
         storage.save(resumeNew);
         assertEquals(4, storage.size());
         final Resume resumeObtained = storage.get(UUID_4);
-        assertSame(resumeNew, resumeObtained);
+        assertEquals(resumeNew, resumeObtained);
     }
 
     @Test(expected = ExistStorageException.class)
@@ -70,10 +70,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() {
-        final Resume resumeExpected = new Resume(UUID_4, "dummy");
-        storage.save(resumeExpected);
-        final Resume resumeReceived = storage.get(UUID_4);
-        assertSame(resumeExpected, resumeReceived);
+        assertNotNull(storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -99,8 +96,8 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        List<Resume> storageReference = new ArrayList<>(List.of(R1, R2, R3));
-        assertEquals(storageReference, storage.getAllSorted());
+        List<Resume> expected = new ArrayList<>(List.of(R1, R2, R3));
+        assertEquals(expected, storage.getAllSorted());
     }
 
     @Test
