@@ -21,16 +21,9 @@ public abstract class AbstractStorage implements Storage {
     }
 
     public final void update(Resume r) {
-        String uuid = r.getUuid();
-        Object searchKey = getKeyForExistedResume(uuid);
+        Object searchKey = getKeyForExistedResume(r.getUuid());
         updateResume(r, searchKey);
         Storage.super.update(r);
-    }
-
-    private Object getKeyForExistedResume(String uuid) {
-        Object searchKey = getSearchKey(uuid);
-        if (!isResumeExist(searchKey)) throw new NotExistStorageException(uuid);
-        return searchKey;
     }
 
     /**
@@ -81,4 +74,10 @@ public abstract class AbstractStorage implements Storage {
     protected abstract List<Resume> getList();
 
     protected abstract void removeResume(Object searchKey);
+
+    private Object getKeyForExistedResume(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (!isResumeExist(searchKey)) throw new NotExistStorageException(uuid);
+        return searchKey;
+    }
 }
