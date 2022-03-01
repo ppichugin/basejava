@@ -21,8 +21,8 @@ public class MapResumeStorage extends AbstractStorage {
 
     @Override
     protected void updateResume(Resume r, Object resume) {
-        /* 'Object resume' contains resume that getSearchKet returned */
-        map.replace(r.getUuid(), (Resume) resume);
+        /* 'Object resume' contains found resume in HashMap that getSearchKey returned */
+        map.replace(((Resume) resume).getUuid(), r);
     }
 
     @Override
