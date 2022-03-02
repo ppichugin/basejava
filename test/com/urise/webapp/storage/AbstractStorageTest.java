@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 public abstract class AbstractStorageTest {
@@ -59,8 +58,7 @@ public abstract class AbstractStorageTest {
         final Resume resumeNew = new Resume(UUID_4, "dummy");
         storage.save(resumeNew);
         assertEquals(4, storage.size());
-        final Resume resumeObtained = storage.get(UUID_4);
-        assertEquals(resumeNew, resumeObtained);
+        assertEquals(resumeNew, storage.get(UUID_4));
     }
 
     @Test(expected = ExistStorageException.class)
@@ -70,7 +68,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() {
-        assertNotNull(storage.get(UUID_1));
+        assertEquals(R1, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
