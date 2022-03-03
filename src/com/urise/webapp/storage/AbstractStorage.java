@@ -66,12 +66,12 @@ public abstract class AbstractStorage implements Storage {
     }
 
     public final List<Resume> getAllSorted() {
-        List<Resume> list = getList();
+        List<Resume> list = getCopyAll();
         list.sort(COMPARATOR_FULLNAME_THEN_UUID);
         return list;
     }
 
-    protected abstract List<Resume> getList();
+    protected abstract List<Resume> getCopyAll();
 
     protected abstract void removeResume(Object searchKey);
 
