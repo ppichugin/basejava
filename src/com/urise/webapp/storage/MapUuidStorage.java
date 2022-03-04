@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * HashMap based storage for Resumes
  */
-public class MapUuidStorage extends AbstractStorage {
+public class MapUuidStorage extends AbstractStorage<String> {
     /**
      * HashMap realisation with key map - as uuid, searchKey - as uuid
      */
@@ -20,23 +20,23 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateResume(Resume r, Object uuid) {
-        map.replace((String) uuid, r);
+    protected void updateResume(Resume r, String uuid) {
+        map.replace(uuid, r);
     }
 
     @Override
-    protected void insertResume(Resume r, Object uuid) {
-        map.put((String) uuid, r);
+    protected void insertResume(Resume r, String uuid) {
+        map.put(uuid, r);
     }
 
     @Override
-    protected Resume getResume(Object uuid) {
-        return map.get((String) uuid);
+    protected Resume getResume(String uuid) {
+        return map.get(uuid);
     }
 
     @Override
-    protected void removeResume(Object uuid) {
-        map.remove((String) uuid);
+    protected void removeResume(String uuid) {
+        map.remove(uuid);
     }
 
     /**
@@ -48,8 +48,8 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isResumeExist(Object uuid) {
-        return map.containsKey((String) uuid);
+    protected boolean isResumeExist(String uuid) {
+        return map.containsKey(uuid);
     }
 
     @Override

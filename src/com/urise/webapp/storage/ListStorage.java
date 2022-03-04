@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * ArrayList based storage for Resumes
  */
-public class ListStorage extends AbstractStorage {
+public class ListStorage extends AbstractStorage<Integer> {
 
     private final List<Resume> list = new ArrayList<>();
 
@@ -20,23 +20,23 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateResume(Resume r, Object index) {
-        list.set((Integer) index, r);
+    protected void updateResume(Resume r, Integer index) {
+        list.set(index, r);
     }
 
     @Override
-    protected void insertResume(Resume r, Object searchKey) {
+    protected void insertResume(Resume r, Integer searchKey) {
         list.add(r);
     }
 
     @Override
-    protected Resume getResume(Object index) {
-        return list.get((Integer) index);
+    protected Resume getResume(Integer index) {
+        return list.get(index);
     }
 
     @Override
-    protected void removeResume(Object index) {
-        list.remove((int) (Integer) index);
+    protected void removeResume(Integer index) {
+        list.remove(index.intValue());
     }
 
     /* @return INDEX */
@@ -51,8 +51,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isResumeExist(Object index) {
-        return (Integer) index >= 0;
+    protected boolean isResumeExist(Integer index) {
+        return index >= 0;
     }
 
     @Override

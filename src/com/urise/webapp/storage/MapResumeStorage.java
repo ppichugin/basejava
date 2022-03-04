@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * HashMap based storage for Resumes
  */
-public class MapResumeStorage extends AbstractStorage {
+public class MapResumeStorage extends AbstractStorage<Resume> {
     /**
      * HashMap realisation with key map - as uuid, searchKey - as Resume
      */
@@ -20,25 +20,25 @@ public class MapResumeStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateResume(Resume r, Object resume) {
-        /* 'Object resume' contains found resume in HashMap that getSearchKey returned */
-        map.replace(((Resume) resume).getUuid(), r);
+    protected void updateResume(Resume r, Resume resume) {
+        /* 'resume' contains found resume in HashMap that getSearchKey returned */
+        map.replace((resume).getUuid(), r);
     }
 
     @Override
-    protected void insertResume(Resume r, Object resume) {
-        /* 'Object resume' is empty. Inserting new element doesn't exist in Map yet */
+    protected void insertResume(Resume r, Resume resume) {
+        /* 'resume' is empty. Inserting new element doesn't exist in Map yet */
         map.put(r.getUuid(), r);
     }
 
     @Override
-    protected Resume getResume(Object resume) {
-        return (Resume) resume;
+    protected Resume getResume(Resume resume) {
+        return resume;
     }
 
     @Override
-    protected void removeResume(Object resume) {
-        map.remove(((Resume) resume).getUuid());
+    protected void removeResume(Resume resume) {
+        map.remove((resume).getUuid());
     }
 
     /**
@@ -50,7 +50,7 @@ public class MapResumeStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isResumeExist(Object resume) {
+    protected boolean isResumeExist(Resume resume) {
         return Objects.nonNull(resume);
     }
 
