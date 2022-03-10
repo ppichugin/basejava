@@ -1,5 +1,6 @@
 package com.urise.webapp;
 
+import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.SectionType;
 
 public class TestSingleton {
@@ -22,7 +23,12 @@ public class TestSingleton {
         System.out.println(instance.ordinal());
 
         for (SectionType type : SectionType.values()) {
-            System.out.println(type.getTitle());
+            System.out.println(type + ": " + type.getTitle());
+        }
+        System.out.println();
+
+        for (ContactType type: ContactType.values()) {
+            System.out.println(type + ": " + type.getTitle());
         }
     }
 
