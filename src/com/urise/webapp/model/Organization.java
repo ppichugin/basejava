@@ -12,6 +12,9 @@ public class Organization {
     private final String responsibilities;
 
     public Organization(String name, String url, LocalDate startDate, LocalDate endDate, String jobTitle, String responsibilities) {
+        Objects.requireNonNull(startDate, "startDate must not be null");
+        Objects.requireNonNull(endDate, "endDate must not be null");
+        Objects.requireNonNull(jobTitle, "jobTitle must not be null");
         this.site = new WebLink(name, url);
         this.startDate = startDate;
         this.endDate = endDate;
@@ -24,7 +27,7 @@ public class Organization {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Organization that = (Organization) o;
-        if (!Objects.equals(site, that.site)) return false;
+        if (!site.equals(that.site)) return false;
         if (!startDate.equals(that.startDate)) return false;
         if (!endDate.equals(that.endDate)) return false;
         if (!jobTitle.equals(that.jobTitle)) return false;

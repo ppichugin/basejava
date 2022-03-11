@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ListSection extends Section {
+public class ListSection extends AbstractSection {
     private final List<String> blocks;
 
     public ListSection(List<String> blocks) {
