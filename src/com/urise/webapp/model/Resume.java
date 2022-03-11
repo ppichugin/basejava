@@ -35,12 +35,20 @@ public class Resume implements Comparable<Resume> {
         return fullName;
     }
 
-    public String getContacts(ContactType type) {
+    public String getContact(ContactType type) {
         return contacts.get(type);
     }
 
-    public String getSections(SectionType type) {
-        return sections.get(type).toString();
+    public void setContact(ContactType type, String value) {
+        contacts.put(type, value);
+    }
+
+    public Section getSection(SectionType type) {
+        return sections.get(type);
+    }
+
+    public void setSection(SectionType type, Section section) {
+        sections.put(type, section);
     }
 
     // re-assigned due to additional field 'fullname' added

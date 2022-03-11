@@ -12,14 +12,6 @@ public class WebLink {
         this.url = url;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -38,6 +30,7 @@ public class WebLink {
 
     @Override
     public String toString() {
-        return "WebLink: " + name + " , url = " + url;
+        if (url == null) return name;
+        return name + ", web: " + url;
     }
 }

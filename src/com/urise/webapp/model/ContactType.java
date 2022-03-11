@@ -2,9 +2,9 @@ package com.urise.webapp.model;
 
 public enum ContactType {
     PHONE("Telephone"),
-    MOBILE("Mobile"),
+    MOBILE("\uD83D\uDCF1 Mobile"),
     SKYPE("Skype"),
-    EMAIL("E-Mail"),
+    EMAIL("\uE715 E-Mail"),
     LINKEDIN("LinkedIn"),
     GITHUB("GitHub"),
     STACKOVERFLOW("StackOverflow"),

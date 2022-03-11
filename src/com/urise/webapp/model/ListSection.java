@@ -1,18 +1,15 @@
 package com.urise.webapp.model;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ListSection extends Section {
-    private final ArrayList<String> blocks;
+    private final List<String> blocks;
 
-    public ListSection(ArrayList<String> blocks) {
-        Objects.requireNonNull(blocks, "parts of sections must not be null");
+    public ListSection(List<String> blocks) {
+        Objects.requireNonNull(blocks, "blocks must not be null");
         this.blocks = blocks;
-    }
-
-    public ArrayList<String> getBlocks() {
-        return blocks;
     }
 
     @Override
@@ -30,6 +27,8 @@ public class ListSection extends Section {
 
     @Override
     public String toString() {
-        return blocks.toString();
+        return blocks.stream()
+                .map(String::toString)
+                .collect(Collectors.joining("\n"));
     }
 }

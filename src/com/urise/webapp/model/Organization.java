@@ -1,6 +1,7 @@
 package com.urise.webapp.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Organization {
@@ -42,12 +43,14 @@ public class Organization {
 
     @Override
     public String toString() {
-        return "Organization{" +
-                "site=" + site +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", jobTitle='" + jobTitle + '\'' +
-                ", responsibilities='" + responsibilities + '\'' +
-                '}';
+        if (responsibilities == null) {
+            return String.join("", site + "\n" +
+                    startDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + " - " +
+                    endDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + '\t' + jobTitle + '\n');
+        }
+        return String.join("", site + "\n" +
+                startDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + " - " +
+                endDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + '\t' + jobTitle + '\n' +
+                responsibilities + '\n');
     }
 }

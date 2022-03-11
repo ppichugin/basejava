@@ -1,16 +1,13 @@
 package com.urise.webapp.model;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrganizationsSection extends Section {
-    private final ArrayList<Organization> organizations;
+    private final List<Organization> organizations;
 
-    public OrganizationsSection(ArrayList<Organization> organizations) {
+    public OrganizationsSection(List<Organization> organizations) {
         this.organizations = organizations;
-    }
-
-    public ArrayList<Organization> getOrganizations() {
-        return organizations;
     }
 
     @Override
@@ -28,6 +25,8 @@ public class OrganizationsSection extends Section {
 
     @Override
     public String toString() {
-        return organizations.toString();
+        return organizations.stream()
+                .map(Organization::toString)
+                .collect(Collectors.joining("\n"));
     }
 }

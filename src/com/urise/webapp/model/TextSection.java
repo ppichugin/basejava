@@ -1,14 +1,13 @@
 package com.urise.webapp.model;
 
+import java.util.Objects;
+
 public class TextSection extends Section {
     private final String topic;
 
     public TextSection(String topic) {
+        Objects.requireNonNull(topic, "topic must not be null");
         this.topic = topic;
-    }
-
-    public String getTopic() {
-        return topic;
     }
 
     @Override
