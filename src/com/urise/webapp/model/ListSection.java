@@ -12,6 +12,10 @@ public class ListSection extends AbstractSection {
         this.blocks = blocks;
     }
 
+    public List<String> getBlocks() {
+        return blocks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
