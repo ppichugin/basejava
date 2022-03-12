@@ -1,14 +1,18 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.ContactType;
+import com.urise.webapp.model.ListPeriod;
 import com.urise.webapp.model.ListSection;
 import com.urise.webapp.model.Organization;
 import com.urise.webapp.model.OrganizationsSection;
+import com.urise.webapp.model.Period;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.model.SectionType;
 import com.urise.webapp.model.TextSection;
+import com.urise.webapp.util.DateUtil;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +21,25 @@ import static com.urise.webapp.model.SectionType.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
-        Resume testResume = new Resume("Grigoriy Kislin");
+        Resume testResume = createResume("UUID1", "Grigoriy Kislin");
+
+        // CONTACTS
+        System.out.println(testResume.getFullName().toUpperCase() + "\n");
+        for (int i = 0; i < ContactType.values().length; i++) {
+            if (testResume.getContact(ContactType.values()[i]) == null) continue;
+            System.out.println(ContactType.values()[i].getTitle() + ": "
+                    + testResume.getContact(ContactType.values()[i]));
+        }
+        System.out.println("----------------------------------------------------------------------");
+        // SECTIONS
+        for (int i = 0; i < SectionType.values().length; i++) {
+            System.out.println(SectionType.values()[i].getTitle().toUpperCase() + "\n"
+                    + testResume.getSection(SectionType.values()[i]) + "\n");
+        }
+    }
+
+    public static Resume createResume(String uuid, String fullName) {
+        Resume testResume = new Resume(uuid, fullName);
         testResume.setContact(MOBILE, "+7(921) 855-0482");
         testResume.setContact(SKYPE, "grigory.kislin");
         testResume.setContact(EMAIL, "gkislin@yandex.ru");
@@ -43,65 +65,68 @@ public class ResumeTestData {
         List<Organization> organizations = new ArrayList<>();
         organizations.add(new Organization("Java Online Projects"
                 , "http://javaops.ru/"
-                , LocalDate.of(2013, 11, 1)
-                , LocalDate.now()
-                , "Автор проекта"
-                , "Создание, организация и проведение Java онлайн проектов и стажировок."));
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2013, Month.OCTOBER)
+                        , LocalDate.now()
+                        , "Автор проекта"
+                        , "Создание, организация и проведение Java онлайн проектов и стажировок.")))));
         organizations.add(new Organization("Wrike"
                 , "https://www.wrike.com/"
-                , LocalDate.of(2014, 10, 1)
-                , LocalDate.of(2016, 1, 1)
-                , "Старший разработчик (backend)"
-                , "Проектирование и разработка онлайн платформы управления проектами Wrike " +
-                "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis)."));
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2014, Month.OCTOBER), DateUtil.of(2016, Month.JANUARY)
+                        , "Старший разработчик (backend)"
+                        , "Проектирование и разработка онлайн платформы управления проектами Wrike " +
+                        "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis).")))));
         organizations.add(new Organization("RIT Center"
                 , null
-                , LocalDate.of(2012, 4, 1)
-                , LocalDate.of(2014, 10, 1)
-                , "Java архитектор"
-                , "Организация процесса разработки системы ERP для разных окружений: " +
-                "релизная политика, версионирование, ведение CI (Jenkins), миграция базы " +
-                "(кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO"));
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2012, Month.APRIL), DateUtil.of(2014, Month.OCTOBER)
+                        , "Java архитектор"
+                        , "Организация процесса разработки системы ERP для разных окружений: " +
+                        "релизная политика, версионирование, ведение CI (Jenkins), миграция базы " +
+                        "(кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO")))));
         testResume.setSection(EXPERIENCE, new OrganizationsSection(organizations));
 
         List<Organization> educations = new ArrayList<>();
         educations.add(new Organization("Coursera", "https://www.coursera.org/course/progfun"
-                , LocalDate.of(2013, 3, 1)
-                , LocalDate.of(2013, 5, 1)
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2013, Month.MARCH)
+                , DateUtil.of(2013, Month.MAY)
                 , "\"Functional Programming Principles in Scala\" by Martin Odersky"
-                , null));
+                , null)))));
         educations.add(new Organization("Luxoft"
                 , "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"
-                , LocalDate.of(2011, 3, 1)
-                , LocalDate.of(2011, 4, 1)
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2011, Month.MARCH)
+                , DateUtil.of(2011, Month.APRIL)
                 , "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\""
-                , null));
+                , null)))));
         educations.add(new Organization("Siemens AG"
                 , "http://www.siemens.ru/"
-                , LocalDate.of(2005, 1, 1)
-                , LocalDate.of(2005, 4, 1)
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(2005, Month.JANUARY)
+                , DateUtil.of(2005, Month.APRIL)
                 , "3 месяца обучения мобильным IN сетям (Берлин)"
-                , null));
+                , null)))));
+        educations.add(new Organization("Санкт-Петербургский национальный исследовательский университет"
+                , "http://www.ifmo.ru/"
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(1993, Month.OCTOBER)
+                        , DateUtil.of(1996, Month.SEPTEMBER)
+                        , "Аспирантура (программист С, С++)", null),
+                new Period(DateUtil.of(1987, Month.OCTOBER)
+                        , DateUtil.of(1993, Month.SEPTEMBER)
+                        , "Инженер (программист Fortran, C)", null)))));
+
         educations.add(new Organization("Заочная физико-техническая школа при МФТИ"
                 , "http://www.school.mipt.ru/"
-                , LocalDate.of(1984, 9, 1)
-                , LocalDate.of(1987, 6, 1)
-                , "Закончил с отличием"
-                , null));
-        testResume.setSection(EDUCATION, new OrganizationsSection(educations));
+                , new ListPeriod(List.of(
+                new Period(DateUtil.of(1984, Month.SEPTEMBER)
+                        , DateUtil.of(1987, Month.JUNE)
+                        , "Закончил с отличием"
+                        , null)))));
 
-        // CONTACTS
-        System.out.println(testResume.getFullName().toUpperCase() + "\n");
-        for (int i = 0; i < ContactType.values().length; i++) {
-            if (testResume.getContact(ContactType.values()[i]) == null) continue;
-            System.out.println(ContactType.values()[i].getTitle() + ": "
-                    + testResume.getContact(ContactType.values()[i]));
-        }
-        System.out.println("----------------------------------------------------------------------");
-        // SECTIONS
-        for (int i = 0; i < SectionType.values().length; i++) {
-            System.out.println(SectionType.values()[i].getTitle().toUpperCase() + "\n"
-                    + testResume.getSection(SectionType.values()[i]) + "\n");
-        }
+        testResume.setSection(EDUCATION, new OrganizationsSection(educations));
+        return testResume;
     }
 }

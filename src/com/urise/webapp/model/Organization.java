@@ -1,25 +1,15 @@
 package com.urise.webapp.model;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Organization {
     private final WebLink site;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
-    private final String jobTitle;
-    private final String responsibilities;
+    private final ListPeriod periodList;
 
-    public Organization(String name, String url, LocalDate startDate, LocalDate endDate, String jobTitle, String responsibilities) {
-        Objects.requireNonNull(startDate, "startDate must not be null");
-        Objects.requireNonNull(endDate, "endDate must not be null");
-        Objects.requireNonNull(jobTitle, "jobTitle must not be null");
+    public Organization(String name, String url, ListPeriod periodList) {
+        Objects.requireNonNull(periodList, "periodList must not be null");
         this.site = new WebLink(name, url);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.jobTitle = jobTitle;
-        this.responsibilities = responsibilities;
+        this.periodList = periodList;
     }
 
     @Override
@@ -28,32 +18,18 @@ public class Organization {
         if (o == null || getClass() != o.getClass()) return false;
         Organization that = (Organization) o;
         if (!site.equals(that.site)) return false;
-        if (!startDate.equals(that.startDate)) return false;
-        if (!endDate.equals(that.endDate)) return false;
-        if (!jobTitle.equals(that.jobTitle)) return false;
-        return Objects.equals(responsibilities, that.responsibilities);
+        return periodList.equals(that.periodList);
     }
 
     @Override
     public int hashCode() {
         int result = site.hashCode();
-        result = 31 * result + startDate.hashCode();
-        result = 31 * result + endDate.hashCode();
-        result = 31 * result + jobTitle.hashCode();
-        result = 31 * result + (responsibilities != null ? responsibilities.hashCode() : 0);
+        result = 31 * result + periodList.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        if (responsibilities == null) {
-            return String.join("", site + "\n" +
-                    startDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + " - " +
-                    endDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + '\t' + jobTitle + '\n');
-        }
-        return String.join("", site + "\n" +
-                startDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + " - " +
-                endDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + '\t' + jobTitle + '\n' +
-                responsibilities + '\n');
+        return String.join("", site + "\n" + periodList + "\n");
     }
 }

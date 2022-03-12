@@ -5,6 +5,7 @@ import com.urise.webapp.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,12 +25,16 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-
+        File[] list = directory.listFiles();
+        if (list == null) return;
+        for (File file : list) {
+            removeResume(file);
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        return (int) Arrays.stream(Objects.requireNonNull(directory.listFiles())).filter(File::isFile).count();
     }
 
     @Override
@@ -39,7 +44,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void updateResume(Resume r, File file) {
-
+        try {
+            doWrite(r, file);
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
     }
 
     @Override
@@ -61,12 +70,22 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume getResume(File file) {
-        return null;
+        if (!file.canRead()) {
+            throw new StorageException("IO error", file.getName());
+        }
+        return doRead(file);
     }
+
+    protected abstract Resume doRead(File file);
 
     @Override
     protected void removeResume(File file) {
-
+        if (file.isFile() && file.exists()) {
+            boolean deleted = file.delete();
+            if (!deleted) {
+                System.out.println("File can not be deleted: " + file.getAbsolutePath());
+            }
+        }
     }
 
     @Override
