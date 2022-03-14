@@ -24,24 +24,24 @@ public class MapResumeStorage extends AbstractStorage<Resume> {
     }
 
     @Override
-    protected void updateResume(Resume r, Resume resume) {
+    protected void doUpdate(Resume r, Resume resume) {
         /* 'resume' contains found resume in HashMap that getSearchKey returned */
         map.replace((resume).getUuid(), r);
     }
 
     @Override
-    protected void insertResume(Resume r, Resume resume) {
+    protected void doSave(Resume r, Resume resume) {
         /* 'resume' is empty. Inserting new element doesn't exist in Map yet */
         map.put(r.getUuid(), r);
     }
 
     @Override
-    protected Resume getResume(Resume resume) {
+    protected Resume doGet(Resume resume) {
         return resume;
     }
 
     @Override
-    protected void removeResume(Resume resume) {
+    protected void doDelete(Resume resume) {
         map.remove((resume).getUuid());
     }
 
@@ -54,12 +54,12 @@ public class MapResumeStorage extends AbstractStorage<Resume> {
     }
 
     @Override
-    protected boolean isResumeExist(Resume resume) {
+    protected boolean isExist(Resume resume) {
         return Objects.nonNull(resume);
     }
 
     @Override
-    protected List<Resume> getCopyAll() {
+    protected List<Resume> doCopyAll() {
         return new ArrayList<>(map.values());
     }
 

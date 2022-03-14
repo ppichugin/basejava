@@ -1,8 +1,16 @@
 package com.urise.webapp;
 
+import com.urise.webapp.model.AbstractSection;
+import com.urise.webapp.model.Organization;
+import com.urise.webapp.model.OrganizationsSection;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.SectionType;
 
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainCollections {
@@ -71,5 +79,21 @@ public class MainCollections {
         System.out.println(map.containsKey(RESUME_1));
         System.out.println(map.containsValue(UUID_1));
         System.out.println(map.containsKey(UUID_1));
+
+        Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
+        sections.put(SectionType.EDUCATION, new OrganizationsSection(
+                new Organization("org", null, new Organization.Position(2020, Month.JANUARY, "aspirant", null))));
+
+        System.out.println(sections);
+        sections.put(SectionType.EDUCATION, new OrganizationsSection(
+                new Organization("org2", null, new Organization.Position(2022, Month.JANUARY, "student", null))));
+        System.out.println(sections);
+
+        List<Organization> education = new ArrayList<>();
+        education.add(new Organization("org", null, new Organization.Position(2020, Month.JANUARY, "aspirant", null)));
+        education.add(new Organization("org2", null, new Organization.Position(2022, Month.JANUARY, "student", null)));
+        sections.put(SectionType.EDUCATION, new OrganizationsSection(education));
+        System.out.println(sections);
+
     }
 }
