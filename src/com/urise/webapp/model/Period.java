@@ -45,10 +45,9 @@ public class Period {
         final String baseLine = startDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + " - " +
                 endDate.format(DateTimeFormatter.ofPattern("MM/yyyy")) + '\t' + jobTitle;
         if (responsibilities == null) {
-            return String.join("",
-                    baseLine);
+            return String.join("", baseLine);
         }
         return String.join("",
-                baseLine + responsibilities);
+                baseLine + '\n' + responsibilities);
     }
 }

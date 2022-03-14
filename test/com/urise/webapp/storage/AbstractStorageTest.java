@@ -23,7 +23,6 @@ public abstract class AbstractStorageTest {
     private static final Resume R2 = ResumeTestData.createResume(UUID_2, "Petrov");
     private static final Resume R3 = ResumeTestData.createResume(UUID_3, "Petrov");
 
-
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }

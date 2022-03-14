@@ -2,7 +2,8 @@ package com.urise.webapp;
 
 import com.urise.webapp.model.Resume;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainCollections {
     private static final String UUID_1 = "uuid1";

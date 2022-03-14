@@ -7,33 +7,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainDirectoryList {
-    static List<String> filesAndFolders = new ArrayList<>();
+    static List<File> filesAndFolders = new ArrayList<>();
     static int files;
     static int folders;
 
     public static void main(String[] args) {
-        final String pathname = "C:/MyJava/basejava/src";
-        DirectoryList(new File(pathname));
-        System.out.println(filesAndFolders.stream()
-                .sorted(Comparator.naturalOrder())
-                .map(String::toString)
+        final String pathname = "./src";
+        listFiles(new File(pathname));
+        System.out.println("Files: \n" + filesAndFolders.stream()
+                .sorted(Comparator.comparing(File::getPath))
+                .map(File::getName)
                 .collect(Collectors.joining("\n")));
         System.out.println("Files: " + files + "\nFolders: " + folders);
     }
 
-    private static void DirectoryList(File dir) {
+    private static void listFiles(File dir) {
         if (!dir.isDirectory()) return;
         File[] list = dir.listFiles();
         if (list != null) {
             for (File name : list) {
                 if (name.isDirectory()) {
                     folders++;
-                    DirectoryList(name);
+                    listFiles(name);
                 }
                 if (name.isFile()) {
                     files++;
+                    filesAndFolders.add(name);
                 }
-                filesAndFolders.add(name.getAbsolutePath());
             }
         }
     }

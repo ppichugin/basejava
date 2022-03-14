@@ -27,7 +27,7 @@ public class TestSingleton {
         }
         System.out.println();
 
-        for (ContactType type: ContactType.values()) {
+        for (ContactType type : ContactType.values()) {
             System.out.println(type + ": " + type.getTitle());
         }
     }
