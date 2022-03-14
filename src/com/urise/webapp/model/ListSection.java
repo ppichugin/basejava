@@ -1,11 +1,16 @@
 package com.urise.webapp.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListSection extends AbstractSection {
     private final List<String> blocks;
+
+    public ListSection(String... blocks) {
+        this(Arrays.asList(blocks));
+    }
 
     public ListSection(List<String> blocks) {
         Objects.requireNonNull(blocks, "blocks must not be null");
