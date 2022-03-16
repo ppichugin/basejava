@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class OrganizationsSection extends AbstractSection {
+    private static final long serialVersionUID = 1L;
     private final List<Organization> organizations;
 
     public OrganizationsSection(Organization... organizations) {
