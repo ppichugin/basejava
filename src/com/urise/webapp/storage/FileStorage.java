@@ -2,7 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.serializers.SerializerIOStrategy;
+import com.urise.webapp.storage.serializer.SerializerIOStrategy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -36,8 +36,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        File[] list = directory.listFiles();
-        if (list == null) return;
+        File[] list = listFiles(directory);
         for (File file : list) {
             doDelete(file);
         }
@@ -45,10 +44,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        String[] list = directory.list();
-        if (list == null) {
-            throw new StorageException("Directory read error", null);
-        }
+        File[] list = listFiles(directory);
         return list.length;
     }
 
@@ -99,13 +95,18 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("Directory read error", null);
-        }
+        File[] files = listFiles(directory);
         List<Resume> list = new ArrayList<>(files.length);
         for (File file : files) {
             list.add(doGet(file));
+        }
+        return list;
+    }
+
+    private File[] listFiles(File dir) {
+        File[] list = dir.listFiles();
+        if (list == null) {
+            throw new StorageException("Directory read error " + dir.getAbsolutePath(), null);
         }
         return list;
     }

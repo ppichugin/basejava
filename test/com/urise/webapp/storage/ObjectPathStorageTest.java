@@ -1,9 +1,9 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.serializers.ObjectIOSerializer;
+import com.urise.webapp.storage.serializer.ObjectIOSerializer;
 
-public class ObjectPathStorageTest extends AbstractStorageTest{
+public class ObjectPathStorageTest extends AbstractStorageTest {
     public ObjectPathStorageTest() {
-        super(new PathStorage(STORAGE_DIR.toString(), new ObjectIOSerializer()));
+        super(new PathStorage(STORAGE_DIR.getAbsolutePath(), new ObjectIOSerializer()));
     }
 }
