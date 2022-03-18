@@ -35,12 +35,12 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public void clear() {
-        listFiles(directory).forEach(this::doDelete);
+        listFiles().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        return (int) listFiles(directory).count();
+        return (int) listFiles().count();
     }
 
     @Override
@@ -92,16 +92,14 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        return listFiles(directory).map(this::doGet).collect(Collectors.toCollection(ArrayList::new));
+        return listFiles().map(this::doGet).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Stream<Path> listFiles(Path dir) {
-        Stream<Path> files;
+    private Stream<Path> listFiles() {
         try {
-            files = Files.list(dir);
+            return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("Directory error " + dir.toAbsolutePath(), null);
+            throw new StorageException("Directory error " + directory.toAbsolutePath(), null);
         }
-        return files;
     }
 }
