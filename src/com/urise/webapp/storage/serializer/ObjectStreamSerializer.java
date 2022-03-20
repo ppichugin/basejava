@@ -9,7 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-public class ObjectIOSerializer implements SerializerIOStrategy {
+public class ObjectStreamSerializer implements StreamSerializerStrategy {
     /**
      * Serializer based on ObjectOutputStream/ObjectInputStream.
      * (ConcreteStrategy for Pattern Strategy)

@@ -2,7 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.storage.serializer.SerializerIOStrategy;
+import com.urise.webapp.storage.serializer.StreamSerializerStrategy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -20,9 +20,9 @@ public class FileStorage extends AbstractStorage<File> {
      */
 
     private final File directory;
-    private final SerializerIOStrategy serializer;
+    private final StreamSerializerStrategy serializer;
 
-    protected FileStorage(File directory, SerializerIOStrategy serializer) {
+    protected FileStorage(File directory, StreamSerializerStrategy serializer) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
@@ -36,14 +36,14 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        for (File file : listFiles()) {
+        for (File file : getFilesList()) {
             doDelete(file);
         }
     }
 
     @Override
     public int size() {
-        return listFiles().length;
+        return getFilesList().length;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        File[] files = listFiles();
+        File[] files = getFilesList();
         List<Resume> list = new ArrayList<>(files.length);
         for (File file : files) {
             list.add(doGet(file));
@@ -101,10 +101,10 @@ public class FileStorage extends AbstractStorage<File> {
         return list;
     }
 
-    private File[] listFiles() {
+    private File[] getFilesList() {
         File[] list = directory.listFiles();
         if (list == null) {
-            throw new StorageException("Directory read error " + directory.getAbsolutePath(), null);
+            throw new StorageException("Directory read error " + directory.getAbsolutePath());
         }
         return list;
     }

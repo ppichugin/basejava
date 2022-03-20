@@ -2,7 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.storage.serializer.SerializerIOStrategy;
+import com.urise.webapp.storage.serializer.StreamSerializerStrategy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,9 +22,9 @@ public class PathStorage extends AbstractStorage<Path> {
      */
 
     private final Path directory;
-    private final SerializerIOStrategy serializer;
+    private final StreamSerializerStrategy serializer;
 
-    protected PathStorage(String dir, SerializerIOStrategy serializer) {
+    protected PathStorage(String dir, StreamSerializerStrategy serializer) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
@@ -35,12 +35,12 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public void clear() {
-        listFiles().forEach(this::doDelete);
+        getFilesList().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        return (int) listFiles().count();
+        return (int) getFilesList().count();
     }
 
     @Override
@@ -49,57 +49,61 @@ public class PathStorage extends AbstractStorage<Path> {
     }
 
     @Override
-    protected void doUpdate(Resume r, Path file) {
+    protected void doUpdate(Resume r, Path path) {
         try {
-            serializer.doWrite(r, new BufferedOutputStream(Files.newOutputStream(file)));
+            serializer.doWrite(r, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
-            throw new StorageException("IO error", file.toFile().getName(), e);
+            throw new StorageException("Path write error", getFileName(path), e);
         }
     }
 
     @Override
-    protected boolean isExist(Path file) {
-        return Files.exists(file);
+    protected boolean isExist(Path path) {
+        return Files.exists(path);
     }
 
     @Override
-    protected void doSave(Resume r, Path file) {
+    protected void doSave(Resume r, Path path) {
         try {
-            Files.createFile(file);
+            Files.createFile(path);
         } catch (IOException e) {
-            throw new StorageException("Couldn't create file " + file.toAbsolutePath(), file.toFile().getName(), e);
+            throw new StorageException("Couldn't create path " + path.toAbsolutePath(), getFileName(path), e);
         }
-        doUpdate(r, file);
+        doUpdate(r, path);
     }
 
     @Override
-    protected Resume doGet(Path file) {
+    protected Resume doGet(Path path) {
         try {
-            return serializer.doRead(new BufferedInputStream(Files.newInputStream(file)));
+            return serializer.doRead(new BufferedInputStream(Files.newInputStream(path)));
         } catch (IOException e) {
-            throw new StorageException("Path read error", file.toFile().getName(), e);
+            throw new StorageException("Path read error", getFileName(path), e);
         }
     }
 
     @Override
-    protected void doDelete(Path file) {
+    protected void doDelete(Path path) {
         try {
-            Files.delete(file);
+            Files.delete(path);
         } catch (IOException e) {
-            throw new StorageException("Path delete error", file.toFile().getName(), e);
+            throw new StorageException("Path delete error", getFileName(path), e);
         }
     }
 
     @Override
     protected List<Resume> doCopyAll() {
-        return listFiles().map(this::doGet).collect(Collectors.toCollection(ArrayList::new));
+        return getFilesList().map(this::doGet).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Stream<Path> listFiles() {
+    private String getFileName(Path path) {
+        return path.toFile().getName();
+    }
+
+    private Stream<Path> getFilesList() {
         try {
             return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("Directory error " + directory.toAbsolutePath(), null);
+            throw new StorageException("Directory error " + directory.toAbsolutePath(), e);
         }
     }
 }

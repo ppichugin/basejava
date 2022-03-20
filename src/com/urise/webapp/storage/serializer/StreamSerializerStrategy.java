@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface SerializerIOStrategy {
+public interface StreamSerializerStrategy {
     /**
      * Interface for Pattern Strategy realization
      */
