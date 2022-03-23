@@ -1,12 +1,18 @@
 package com.urise.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WebLink implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final String name;
-    private final String url;
+    private String name;
+    private String url;
+
+    public WebLink() {
+    }
 
     public WebLink(String name, String url) {
         Objects.requireNonNull(name, "name must not be null");
