@@ -9,7 +9,6 @@ import com.urise.webapp.model.Resume;
 import com.urise.webapp.model.SectionType;
 import com.urise.webapp.model.TextSection;
 import com.urise.webapp.model.WebLink;
-import com.urise.webapp.util.BiConsumerWithException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -34,13 +33,10 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
             //CONTACTS
-            Map<ContactType, String> contacts = r.getContacts();
-            dos.writeInt(contacts.size());
-//            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-//                dos.writeUTF(entry.getKey().name());
-//                dos.writeUTF(entry.getValue());
-//            }
-            writeWithException(contacts.entrySet(), dos, (type, s) -> {});
+            writeWithException(r.getContacts().entrySet(), dos, contactTypeStringEntry -> {
+                dos.writeUTF(contactTypeStringEntry.getKey().name());
+                dos.writeUTF(contactTypeStringEntry.getValue());
+            });
 
             //SECTIONS
             Map<SectionType, AbstractSection> sections = r.getSections();
@@ -88,21 +84,13 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         }
     }
 
-    private void writeWithException(Collection<Map.Entry<ContactType, String>> contacts,
-                                    DataOutputStream dos,
-                                    BiConsumerWithException<ContactType, String> writer) throws IOException {
-        writer = new BiConsumerWithException<ContactType, String>() {
-            @Override
-            public void accept(ContactType type, String s) throws IOException {
-                dos.writeUTF(type.name());
-                dos.writeUTF(s);
-            }
-        };
-        for (Map.Entry<ContactType, String> contact : contacts) {
-            writer.accept(contact.getKey(), contact.getValue());
+    private <T> void writeWithException(Collection<T> contacts, DataOutputStream dos,
+                                        MyWriter<T> myWriter) throws IOException {
+        dos.writeInt(contacts.size());
+        for (T contact : contacts) {
+            myWriter.write(contact);
         }
     }
-
 
     private void writeDateByParts(DataOutputStream dos, LocalDate date) throws IOException {
         dos.writeInt(date.getYear());
@@ -170,4 +158,7 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         return LocalDate.of(year, month, day);
     }
 
+    private interface MyWriter<T> {
+        void write(T t) throws IOException;
+    }
 }
