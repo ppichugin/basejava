@@ -13,9 +13,9 @@ import java.util.logging.Logger;
  * Abstract storage for Resumes
  */
 public abstract class AbstractStorage<SK> implements Storage {
+    public static final Comparator<Resume> COMPARATOR_FULLNAME_THEN_UUID;
     //    protected final Logger LOG = Logger.getLogger(getClass().getName());
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
-    public static final Comparator<Resume> COMPARATOR_FULLNAME_THEN_UUID;
 
     static {
         COMPARATOR_FULLNAME_THEN_UUID = Comparator
