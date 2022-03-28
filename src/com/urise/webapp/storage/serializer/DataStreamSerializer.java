@@ -9,6 +9,7 @@ import com.urise.webapp.model.Resume;
 import com.urise.webapp.model.SectionType;
 import com.urise.webapp.model.TextSection;
 import com.urise.webapp.model.WebLink;
+import com.urise.webapp.util.BiConsumerWithException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -31,32 +33,34 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
+            //CONTACTS
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
+//            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+//                dos.writeUTF(entry.getKey().name());
+//                dos.writeUTF(entry.getValue());
+//            }
+            writeWithException(contacts.entrySet(), dos, (type, s) -> {});
+
+            //SECTIONS
             Map<SectionType, AbstractSection> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
                 final SectionType sectionType = entry.getKey();
+                dos.writeUTF(sectionType.name());
                 switch (sectionType) {
                     case OBJECTIVE, PERSONAL -> {
-                        dos.writeUTF(sectionType.name());
-                        dos.writeUTF(String.valueOf(entry.getValue()));
+                        String topic = ((TextSection) entry.getValue()).getTopic();
+                        dos.writeUTF(topic);
                     }
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-                        dos.writeUTF(sectionType.name());
                         final List<String> blocks = ((ListSection) sections.get(sectionType)).getBlocks();
-                        final int quantityOfBlocks = blocks.size();
-                        dos.writeInt(quantityOfBlocks);
+                        dos.writeInt(blocks.size());
                         for (String block : blocks) {
-                            dos.writeUTF(String.valueOf(block));
+                            dos.writeUTF(block);
                         }
                     }
                     case EXPERIENCE, EDUCATION -> {
-                        dos.writeUTF(sectionType.name());
                         final List<Organization> organizationList = ((OrganizationsSection) sections.get(sectionType))
                                 .getOrganizations();
                         final int quantityOfOrganizations = organizationList.size();
@@ -72,8 +76,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                             for (int j = 0; j < quantityOfPositions; j++) {
                                 List<Organization.Position> positions = organization.getPositions();
                                 Organization.Position position = positions.get(j);
-                                dos.writeUTF(String.valueOf(position.getStartDate()));
-                                dos.writeUTF(String.valueOf(position.getEndDate()));
+                                writeDateByParts(dos, position.getStartDate());
+                                writeDateByParts(dos, position.getEndDate());
                                 dos.writeUTF(position.getTitle());
                                 dos.writeUTF(position.getDescription() == null ? "" : position.getDescription());
                             }
@@ -82,6 +86,28 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                 }
             }
         }
+    }
+
+    private void writeWithException(Collection<Map.Entry<ContactType, String>> contacts,
+                                    DataOutputStream dos,
+                                    BiConsumerWithException<ContactType, String> writer) throws IOException {
+        writer = new BiConsumerWithException<ContactType, String>() {
+            @Override
+            public void accept(ContactType type, String s) throws IOException {
+                dos.writeUTF(type.name());
+                dos.writeUTF(s);
+            }
+        };
+        for (Map.Entry<ContactType, String> contact : contacts) {
+            writer.accept(contact.getKey(), contact.getValue());
+        }
+    }
+
+
+    private void writeDateByParts(DataOutputStream dos, LocalDate date) throws IOException {
+        dos.writeInt(date.getYear());
+        dos.writeInt(date.getMonth().getValue());
+        dos.writeInt(date.getDayOfMonth());
     }
 
     @Override
@@ -120,8 +146,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                             int quantityOfPositions = dis.readInt();
                             List<Organization.Position> positions = new ArrayList<>(quantityOfPositions);
                             for (int k = 0; k < quantityOfPositions; k++) {
-                                LocalDate startDate = LocalDate.parse(dis.readUTF());
-                                LocalDate endDate = LocalDate.parse(dis.readUTF());
+                                LocalDate startDate = readDateByParts(dis);
+                                LocalDate endDate = readDateByParts(dis);
                                 String title = dis.readUTF();
                                 String description = dis.readUTF();
                                 positions.add(new Organization.Position(startDate, endDate, title, description.equals("") ? null : description));
@@ -136,4 +162,12 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             return resume;
         }
     }
+
+    private LocalDate readDateByParts(DataInputStream dis) throws IOException {
+        int year = dis.readInt();
+        int month = dis.readInt();
+        int day = dis.readInt();
+        return LocalDate.of(year, month, day);
+    }
+
 }
