@@ -37,57 +37,35 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                 dos.writeUTF(contactTypeStringEntry.getKey().name());
                 dos.writeUTF(contactTypeStringEntry.getValue());
             });
-
             //SECTIONS
             Map<SectionType, AbstractSection> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
-                final SectionType sectionType = entry.getKey();
-                dos.writeUTF(sectionType.name());
-                switch (sectionType) {
-                    case OBJECTIVE, PERSONAL -> {
-                        String topic = ((TextSection) entry.getValue()).getTopic();
-                        dos.writeUTF(topic);
-                    }
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        final List<String> blocks = ((ListSection) sections.get(sectionType)).getBlocks();
-                        dos.writeInt(blocks.size());
-                        for (String block : blocks) {
-                            dos.writeUTF(block);
-                        }
-                    }
-                    case EXPERIENCE, EDUCATION -> {
-                        final List<Organization> organizationList = ((OrganizationsSection) sections.get(sectionType))
-                                .getOrganizations();
-                        final int quantityOfOrganizations = organizationList.size();
-                        dos.writeInt(quantityOfOrganizations);
-
-                        for (Organization organization : organizationList) {
-                            WebLink site = organization.getSite();
-                            dos.writeUTF(site.getName());
-                            dos.writeUTF(site.getUrl() == null ? "" : site.getUrl());
-
-                            int quantityOfPositions = organization.getPositions().size();
-                            dos.writeInt(quantityOfPositions);
-                            for (int j = 0; j < quantityOfPositions; j++) {
-                                List<Organization.Position> positions = organization.getPositions();
-                                Organization.Position position = positions.get(j);
-                                writeDateByParts(dos, position.getStartDate());
-                                writeDateByParts(dos, position.getEndDate());
-                                dos.writeUTF(position.getTitle());
-                                dos.writeUTF(position.getDescription() == null ? "" : position.getDescription());
-                            }
-                        }
-                    }
+                dos.writeUTF(entry.getKey().name());
+                switch (entry.getKey()) {
+                    case OBJECTIVE, PERSONAL -> dos.writeUTF(((TextSection) entry.getValue()).getTopic());
+                    case ACHIEVEMENT, QUALIFICATIONS -> writeWithException(((ListSection) sections.get(entry.getKey()))
+                            .getBlocks(), dos, dos::writeUTF);
+                    case EXPERIENCE, EDUCATION -> writeWithException(((OrganizationsSection) sections.get(entry.getKey()))
+                            .getOrganizations(), dos, organization -> {
+                        WebLink site = organization.getSite();
+                        dos.writeUTF(site.getName());
+                        dos.writeUTF(site.getUrl() == null ? "" : site.getUrl());
+                        writeWithException(organization.getPositions(), dos, position -> {
+                            writeDateByParts(dos, position.getStartDate());
+                            writeDateByParts(dos, position.getEndDate());
+                            dos.writeUTF(position.getTitle());
+                            dos.writeUTF(position.getDescription() == null ? "" : position.getDescription());
+                        });
+                    });
                 }
             }
         }
     }
 
-    private <T> void writeWithException(Collection<T> contacts, DataOutputStream dos,
-                                        MyWriter<T> myWriter) throws IOException {
-        dos.writeInt(contacts.size());
-        for (T contact : contacts) {
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, MyWriter<T> myWriter) throws IOException {
+        dos.writeInt(collection.size());
+        for (T contact : collection) {
             myWriter.write(contact);
         }
     }
