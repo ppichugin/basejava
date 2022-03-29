@@ -33,14 +33,13 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
             //CONTACTS
-            writeWithException(r.getContacts().entrySet(), dos, contactTypeStringEntry -> {
-                dos.writeUTF(contactTypeStringEntry.getKey().name());
-                dos.writeUTF(contactTypeStringEntry.getValue());
+            writeWithException(r.getContacts().entrySet(), dos, entry -> {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
             });
             //SECTIONS
             Map<SectionType, AbstractSection> sections = r.getSections();
-            dos.writeInt(sections.size());
-            for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
+            writeWithException(sections.entrySet(), dos, entry -> {
                 dos.writeUTF(entry.getKey().name());
                 switch (entry.getKey()) {
                     case OBJECTIVE, PERSONAL -> dos.writeUTF(((TextSection) entry.getValue()).getTopic());
@@ -59,21 +58,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                         });
                     });
                 }
-            }
+            });
         }
-    }
-
-    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, MyWriter<T> myWriter) throws IOException {
-        dos.writeInt(collection.size());
-        for (T contact : collection) {
-            myWriter.write(contact);
-        }
-    }
-
-    private void writeDateByParts(DataOutputStream dos, LocalDate date) throws IOException {
-        dos.writeInt(date.getYear());
-        dos.writeInt(date.getMonth().getValue());
-        dos.writeInt(date.getDayOfMonth());
     }
 
     @Override
@@ -83,50 +69,61 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
             // CONTACTS
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
+            readWithException(dis, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
             // SECTIONS
-            size = dis.readInt();
-            for (int i = 0; i < size; i++) {
+            readWithException(dis, () -> {
                 SectionType type = SectionType.valueOf(dis.readUTF());
                 AbstractSection section = null;
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> section = new TextSection(dis.readUTF());
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-                        int quantityOfBlocks = dis.readInt();
                         List<String> listSection = new ArrayList<>();
-                        for (int j = 0; j < quantityOfBlocks; j++) {
-                            listSection.add(dis.readUTF());
-                        }
+                        readWithException(dis, () -> listSection.add(dis.readUTF()));
                         section = new ListSection(listSection);
                     }
                     case EXPERIENCE, EDUCATION -> {
-                        final int quantityOfOrganizations = dis.readInt();
-                        List<Organization> organizations = new ArrayList<>(quantityOfOrganizations);
-                        for (int j = 0; j < quantityOfOrganizations; j++) {
+                        List<Organization> organizations = new ArrayList<>();
+                        readWithException(dis, () -> {
                             String name = dis.readUTF();
                             String url = dis.readUTF();
                             WebLink site = new WebLink(name, url.equals("") ? null : url);
-                            int quantityOfPositions = dis.readInt();
-                            List<Organization.Position> positions = new ArrayList<>(quantityOfPositions);
-                            for (int k = 0; k < quantityOfPositions; k++) {
+                            List<Organization.Position> positions = new ArrayList<>();
+                            readWithException(dis, () -> {
                                 LocalDate startDate = readDateByParts(dis);
                                 LocalDate endDate = readDateByParts(dis);
                                 String title = dis.readUTF();
                                 String description = dis.readUTF();
                                 positions.add(new Organization.Position(startDate, endDate, title, description.equals("") ? null : description));
-                            }
+                            });
                             organizations.add(new Organization(site, positions));
-                        }
+                        });
                         section = new OrganizationsSection(organizations);
                     }
                 }
                 resume.addSection(type, section);
-            }
+            });
             return resume;
         }
+    }
+
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, MyWriter<T> myWriter) throws IOException {
+        dos.writeInt(collection.size());
+        for (T t : collection) {
+            myWriter.write(t);
+        }
+    }
+
+    private <T> void readWithException(DataInputStream dis, MyReader<T> myReader) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            myReader.read();
+        }
+    }
+
+    private void writeDateByParts(DataOutputStream dos, LocalDate date) throws IOException {
+        dos.writeInt(date.getYear());
+        dos.writeInt(date.getMonth().getValue());
+        dos.writeInt(date.getDayOfMonth());
     }
 
     private LocalDate readDateByParts(DataInputStream dis) throws IOException {
@@ -138,5 +135,9 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
 
     private interface MyWriter<T> {
         void write(T t) throws IOException;
+    }
+
+    private interface MyReader<T> {
+        void read() throws IOException;
     }
 }
