@@ -49,12 +49,12 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                             .getOrganizations(), dos, organization -> {
                         WebLink site = organization.getSite();
                         dos.writeUTF(site.getName());
-                        dos.writeUTF(site.getUrl() == null ? "" : site.getUrl());
+                        dos.writeUTF(site.getUrl());
                         writeWithException(organization.getPositions(), dos, position -> {
                             writeDateByParts(dos, position.getStartDate());
                             writeDateByParts(dos, position.getEndDate());
                             dos.writeUTF(position.getTitle());
-                            dos.writeUTF(position.getDescription() == null ? "" : position.getDescription());
+                            dos.writeUTF(position.getDescription());
                         });
                     });
                 }
@@ -72,38 +72,33 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             readWithException(dis, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
             // SECTIONS
             readWithException(dis, () -> {
-                SectionType type = SectionType.valueOf(dis.readUTF());
-                AbstractSection section = null;
-                switch (type) {
-                    case OBJECTIVE, PERSONAL -> section = new TextSection(dis.readUTF());
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> listSection = new ArrayList<>();
-                        readWithException(dis, () -> listSection.add(dis.readUTF()));
-                        section = new ListSection(listSection);
-                    }
-                    case EXPERIENCE, EDUCATION -> {
-                        List<Organization> organizations = new ArrayList<>();
-                        readWithException(dis, () -> {
-                            String name = dis.readUTF();
-                            String url = dis.readUTF();
-                            WebLink site = new WebLink(name, url.equals("") ? null : url);
-                            List<Organization.Position> positions = new ArrayList<>();
-                            readWithException(dis, () -> {
-                                LocalDate startDate = readDateByParts(dis);
-                                LocalDate endDate = readDateByParts(dis);
-                                String title = dis.readUTF();
-                                String description = dis.readUTF();
-                                positions.add(new Organization.Position(startDate, endDate, title, description.equals("") ? null : description));
-                            });
-                            organizations.add(new Organization(site, positions));
-                        });
-                        section = new OrganizationsSection(organizations);
-                    }
-                }
-                resume.addSection(type, section);
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                resume.addSection(sectionType, readSection(dis, sectionType));
             });
             return resume;
         }
+    }
+
+    private AbstractSection readSection(DataInputStream dis, SectionType sectionType) throws IOException {
+        AbstractSection section;
+        switch (sectionType) {
+            case OBJECTIVE, PERSONAL -> section = new TextSection(dis.readUTF());
+            case ACHIEVEMENT, QUALIFICATIONS -> section = new ListSection(readList(dis, dis::readUTF));
+            case EXPERIENCE, EDUCATION -> section = new OrganizationsSection(
+                    readList(dis, () -> new Organization(new WebLink(dis.readUTF(), dis.readUTF()),
+                            readList(dis, () -> new Organization.Position(readDateByParts(dis), readDateByParts(dis), dis.readUTF(), dis.readUTF())))));
+            default -> throw new IllegalStateException("Unexpected value: " + sectionType);
+        }
+        return section;
+    }
+
+    private <T> List<T> readList(DataInputStream dis, ElementReader<T> reader) throws IOException {
+        int size = dis.readInt();
+        List<T> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(reader.read());
+        }
+        return list;
     }
 
     private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, MyWriter<T> myWriter) throws IOException {
@@ -123,14 +118,12 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
     private void writeDateByParts(DataOutputStream dos, LocalDate date) throws IOException {
         dos.writeInt(date.getYear());
         dos.writeInt(date.getMonth().getValue());
-        dos.writeInt(date.getDayOfMonth());
     }
 
     private LocalDate readDateByParts(DataInputStream dis) throws IOException {
         int year = dis.readInt();
         int month = dis.readInt();
-        int day = dis.readInt();
-        return LocalDate.of(year, month, day);
+        return LocalDate.of(year, month, 1);
     }
 
     private interface MyWriter<T> {
@@ -139,5 +132,9 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
 
     private interface MyReader<T> {
         void read() throws IOException;
+    }
+
+    private interface ElementReader<T> {
+        T read() throws IOException;
     }
 }
