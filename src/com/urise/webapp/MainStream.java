@@ -53,9 +53,7 @@ public class MainStream {
          * If sum of all numbers is even, we do return all odd numbers.
          * Otherwise, we do return all even numbers.
          */
-        return integers.stream().collect(Collectors.filtering(integer -> {
-            if (sum % 2 == 0) return integer % 2 == 1;
-            return integer % 2 == 0;
-        }, Collectors.toList()));
+        return integers.stream().collect(Collectors.
+                filtering(integer -> sum % 2 == 0 ? integer % 2 == 1 : integer % 2 == 0, Collectors.toList()));
     }
 }
