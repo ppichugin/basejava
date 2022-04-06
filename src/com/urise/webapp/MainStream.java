@@ -2,7 +2,8 @@ package com.urise.webapp;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class MainStream {
     public static void main(String[] args) {
@@ -12,8 +13,8 @@ public class MainStream {
         int[] array2 = new int[]{9, 8};
         System.out.println(" -> OUTPUT: " + minValue(array2));
         System.out.println("\noddOrEven");
-        System.out.println(" -> OUTPUT: " + oddOrEven(Arrays.stream(array1).boxed().collect(Collectors.toList())));
-        System.out.println(" -> OUTPUT: " + oddOrEven(Arrays.stream(array2).boxed().collect(Collectors.toList())));
+        System.out.println(" -> OUTPUT: " + oddOrEven(Arrays.stream(array1).boxed().collect(toList())));
+        System.out.println(" -> OUTPUT: " + oddOrEven(Arrays.stream(array2).boxed().collect(toList())));
     }
 
     static int minValue(int[] values) {
@@ -49,11 +50,18 @@ public class MainStream {
                 (evenList, oddList) -> oddList.size() % 2 == 1 ? evenList : oddList));
 */
 
-        /**
-         * If sum of all numbers is even, we do return all odd numbers.
-         * Otherwise, we do return all even numbers.
+        /*
+          If sum of all numbers is even, we do return all odd numbers.
+          Otherwise, we do return all even numbers.
          */
-        return integers.stream().collect(Collectors.
-                filtering(integer -> sum % 2 == 0 ? integer % 2 == 1 : integer % 2 == 0, Collectors.toList()));
+//        return integers.stream().collect(Collectors.
+//                filtering(integer -> sum % 2 == 0 ? integer % 2 == 1 : integer % 2 == 0, Collectors.toList()));
+
+        /**
+         * Even sum + even number will give even number.
+         * Odd sum + odd number will give even number.
+         * Therefore, we should skipp all numbers that modulo division gives a remainder of 0.
+         */
+        return integers.stream().filter(integer -> (sum + integer) % 2 != 0).collect(toList());
     }
 }
