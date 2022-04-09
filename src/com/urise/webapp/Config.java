@@ -1,9 +1,12 @@
 package com.urise.webapp;
 
+import com.urise.webapp.sql.ConnectionFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.DriverManager;
 import java.util.Properties;
 
 public class Config {
@@ -15,6 +18,7 @@ public class Config {
     private final String dbUrl;
     private final String dbUser;
     private final String dbPassword;
+    private final ConnectionFactory sqlStorage;
 
     public static Config get() {
         return INSTANCE;
@@ -27,6 +31,7 @@ public class Config {
             dbUrl = props.getProperty("db.url");
             dbUser = props.getProperty("db.user");
             dbPassword = props.getProperty("db.password");
+            sqlStorage = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         } catch (IOException e) {
             throw new IllegalStateException("Invalid config file " + PROPS.getAbsolutePath());
         }
@@ -36,15 +41,7 @@ public class Config {
         return storageDir;
     }
 
-    public String getDbUrl() {
-        return dbUrl;
-    }
-
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public String getDbPassword() {
-        return dbPassword;
+    public ConnectionFactory getSqlStorage() {
+        return sqlStorage;
     }
 }
