@@ -4,9 +4,11 @@ import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.model.SectionType;
 
+import java.util.UUID;
+
 public class ResumeTestData {
     public static void main(String[] args) {
-        Resume testResume = createResume("UUID1", "Grigoriy Kislin");
+        Resume testResume = createResume(UUID.randomUUID().toString(), "Grigoriy Kislin");
 
         // CONTACTS
         System.out.println(testResume.getFullName().toUpperCase() + "\n");
