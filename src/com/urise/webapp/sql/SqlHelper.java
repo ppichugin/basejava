@@ -15,10 +15,10 @@ public class SqlHelper {
         this.conn = conn;
     }
 
-    public <T> void execute(String SqlStatement, ProcessSqlRequest<PreparedStatement> blockCode) {
+    public <T> T execute(String SqlStatement, ProcessSqlRequest<T> blockCode) {
         try (Connection connection = conn.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SqlStatement)) {
-            blockCode.run(preparedStatement);
+            return blockCode.run(preparedStatement);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) throw new ExistStorageException(e);
             throw new StorageException(e);
@@ -26,6 +26,6 @@ public class SqlHelper {
     }
 
     public interface ProcessSqlRequest<T> {
-        void run(T ps) throws SQLException;
+        T run(PreparedStatement ps) throws SQLException;
     }
 }

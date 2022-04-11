@@ -9,10 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
-
-import static com.urise.webapp.storage.AbstractStorage.COMPARATOR_FULLNAME_THEN_UUID;
 
 public class SqlStorage implements Storage {
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
@@ -37,6 +34,7 @@ public class SqlStorage implements Storage {
             ps.setString(1, r.getFullName());
             ps.setString(2, r.getUuid());
             if (ps.executeUpdate() == 0) throw new NotExistStorageException(r.getUuid());
+            return null;
         });
     }
 
@@ -46,7 +44,8 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("INSERT INTO resume (uuid, full_name) VALUES (?, ?)", ps -> {
             ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
-            ps.executeUpdate();
+            ps.execute();
+            return null;
         });
     }
 
@@ -54,13 +53,12 @@ public class SqlStorage implements Storage {
     public Resume get(String uuid) {
         LOG.info("Get " + uuid);
         final Resume[] resume = new Resume[1];
-        sqlHelper.execute("SELECT * FROM resume r WHERE r.uuid=?", ps -> {
+        return sqlHelper.execute("SELECT * FROM resume r WHERE r.uuid=?", ps -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) throw new NotExistStorageException(uuid);
-            resume[0] = new Resume(uuid, rs.getString("full_name"));
+            return resume[0] = new Resume(uuid, rs.getString("full_name"));
         });
-        return resume[0];
     }
 
     @Override
@@ -69,6 +67,7 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("DELETE FROM resume r WHERE r.uuid=?", ps -> {
             ps.setString(1, uuid);
             if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
+            return null;
         });
     }
 
@@ -76,27 +75,24 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         LOG.info("getAllSorted");
         List<Resume> list = new ArrayList<>();
-        sqlHelper.execute("SELECT * FROM resume", ps -> {
+        return sqlHelper.execute("SELECT * FROM resume ORDER BY full_name, uuid", ps -> {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String uuid = rs.getString("uuid").trim();
                 String fullName = rs.getString("full_name");
                 list.add(new Resume(uuid, fullName));
             }
-        });
-        list.sort(COMPARATOR_FULLNAME_THEN_UUID);
         return list;
+        });
     }
 
     @Override
     public int size() {
         LOG.info("size");
-        AtomicInteger size = new AtomicInteger();
-        sqlHelper.execute("SELECT COUNT (*) FROM resume", ps -> {
+        return sqlHelper.execute("SELECT COUNT (*) FROM resume", ps -> {
             ResultSet rs = ps.executeQuery();
             rs.next();
-            size.set(rs.getInt(1));
+            return rs.getInt(1);
         });
-        return size.get();
     }
 }
