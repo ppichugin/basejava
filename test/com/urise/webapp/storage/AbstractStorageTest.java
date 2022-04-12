@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +24,9 @@ public abstract class AbstractStorageTest {
     private static final String UUID_2 = UUID.randomUUID().toString();
     private static final String UUID_3 = UUID.randomUUID().toString();
     private static final String UUID_4 = UUID.randomUUID().toString();
-    private static final Resume R1 = ResumeTestData.createResume(UUID_1, "Ivanov");
-    private static final Resume R2 = ResumeTestData.createResume(UUID_2, "Petrov");
-    private static final Resume R3 = ResumeTestData.createResume(UUID_3, "Petrov");
+    private static final Resume R1 = ResumeTestData.createResume(UUID_1, "Name1");
+    private static final Resume R2 = ResumeTestData.createResume(UUID_2, "Name2");
+    private static final Resume R3 = ResumeTestData.createResume(UUID_3, "Name2");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -99,9 +100,10 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        List<Resume> expected = new ArrayList<>(List.of(R1, R2, R3));
+        List<Resume> sortedResumes = new ArrayList<>(List.of(R1, R2, R3));
+        Collections.sort(sortedResumes);
         assertEquals(3, storage.size());
-        assertEquals(expected, storage.getAllSorted());
+        assertEquals(sortedResumes, storage.getAllSorted());
     }
 
     @Test

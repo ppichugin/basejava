@@ -2,9 +2,9 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.sql.ConnectionFactory;
 import com.urise.webapp.sql.SqlHelper;
 
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -13,12 +13,10 @@ import java.util.logging.Logger;
 
 public class SqlStorage implements Storage {
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
-    private final ConnectionFactory connectionFactory;
     private final SqlHelper sqlHelper;
 
-    public SqlStorage(ConnectionFactory sqlStorage) {
-        connectionFactory = sqlStorage;
-        sqlHelper = new SqlHelper(connectionFactory);
+    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
     @Override
@@ -30,7 +28,7 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         LOG.info("Update " + r);
-        sqlHelper.execute("UPDATE resume SET full_name=? WHERE uuid=?", ps -> {
+        sqlHelper.<Void>execute("UPDATE resume SET full_name=? WHERE uuid=?", ps -> {
             ps.setString(1, r.getFullName());
             ps.setString(2, r.getUuid());
             if (ps.executeUpdate() == 0) throw new NotExistStorageException(r.getUuid());
@@ -41,7 +39,7 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         LOG.info("Save " + r.getUuid());
-        sqlHelper.execute("INSERT INTO resume (uuid, full_name) VALUES (?, ?)", ps -> {
+        sqlHelper.<Void>execute("INSERT INTO resume (uuid, full_name) VALUES (?, ?)", ps -> {
             ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
             ps.execute();
@@ -88,8 +86,7 @@ public class SqlStorage implements Storage {
         LOG.info("size");
         return sqlHelper.execute("SELECT COUNT (*) FROM resume", ps -> {
             ResultSet rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
+            return rs.next() ? rs.getInt(1) : 0;
         });
     }
 }

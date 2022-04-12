@@ -1,31 +1,23 @@
 package com.urise.webapp.sql;
 
-import com.urise.webapp.exception.ExistStorageException;
-import com.urise.webapp.exception.StorageException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SqlHelper {
 
-    private final ConnectionFactory conn;
+    private final ConnectionFactory connectionFactory;
 
     public SqlHelper(ConnectionFactory conn) {
-        this.conn = conn;
+        this.connectionFactory = conn;
     }
 
-    public <T> T execute(String SqlStatement, ProcessSqlRequest<T> blockCode) {
-        try (Connection connection = conn.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SqlStatement)) {
+    public <T> T execute(String sqlStatement, ProcessSqlRequest<T> blockCode) {
+        try (Connection connection = connectionFactory.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
             return blockCode.run(preparedStatement);
         } catch (SQLException e) {
-            if (e.getSQLState().equals("23505")) throw new ExistStorageException(e);
-            throw new StorageException(e);
+            throw ExceptionUtil.convertException(e);
         }
-    }
-
-    public interface ProcessSqlRequest<T> {
-        T run(PreparedStatement ps) throws SQLException;
     }
 }
