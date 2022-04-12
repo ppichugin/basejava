@@ -6,6 +6,8 @@ import com.urise.webapp.model.SectionType;
 
 import java.util.UUID;
 
+import static com.urise.webapp.model.ContactType.*;
+
 public class ResumeTestData {
     public static void main(String[] args) {
         Resume testResume = createResume(UUID.randomUUID().toString(), "Grigoriy Kislin");
@@ -27,13 +29,13 @@ public class ResumeTestData {
 
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
-//        resume.addContact(MOBILE, "+7(921) 855-0482");
-//        resume.addContact(SKYPE, "grigory.kislin");
-//        resume.addContact(EMAIL, "gkislin@yandex.ru");
-//        resume.addContact(LINKEDIN, "https://www.linkedin.com/in/gkislin");
-//        resume.addContact(GITHUB, "https://github.com/gkislin");
-//        resume.addContact(STACKOVERFLOW, "https://stackoverflow.com/users/548473");
-//        resume.addContact(WEB, "http://gkislin.ru/");
+        resume.addContact(MOBILE, "+7(921) 855-0482");
+        resume.addContact(SKYPE, "grigory.kislin");
+        resume.addContact(EMAIL, "gkislin@yandex.ru");
+        resume.addContact(LINKEDIN, "https://www.linkedin.com/in/gkislin");
+        resume.addContact(GITHUB, "https://github.com/gkislin");
+        resume.addContact(STACKOVERFLOW, "https://stackoverflow.com/users/548473");
+        resume.addContact(WEB, "http://gkislin.ru/");
 //
 //        resume.addSection(OBJECTIVE, new TextSection("Ведущий стажировок " +
 //                "и корпоративного обучения по Java Web и Enterprise технологиям."));
