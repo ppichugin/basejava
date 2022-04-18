@@ -24,6 +24,8 @@ public class Config {
             sqlStorage = new SqlStorage(props.getProperty("db.url"), props.getProperty("db.user"), props.getProperty("db.password"));
         } catch (IOException e) {
             throw new IllegalStateException("Invalid config file " + PROPS.getAbsolutePath());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("No DataBase Driver found " + e.getMessage());
         }
     }
 
