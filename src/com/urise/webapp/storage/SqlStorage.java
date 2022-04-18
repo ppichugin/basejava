@@ -44,10 +44,6 @@ public class SqlStorage implements Storage {
                 ps.setString(2, r.getUuid());
                 checkNotExist(ps, r.getUuid());
             }
-//            try (PreparedStatement psDelete = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid=?")) {
-//                psDelete.setString(1, r.getUuid());
-//                psDelete.execute();
-//            }
             deleteContacts(conn, r);
             insertContacts(conn, r);
             return null;
