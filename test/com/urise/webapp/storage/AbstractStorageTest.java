@@ -64,6 +64,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void save() {
         final Resume resumeNew = ResumeTestData.createResume(UUID_4, "dummy");
+        resumeNew.addContact(ContactType.PHONE, "0000000");
         storage.save(resumeNew);
         assertEquals(4, storage.size());
         assertEquals(resumeNew, storage.get(UUID_4));
