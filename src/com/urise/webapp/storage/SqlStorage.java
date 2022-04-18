@@ -20,8 +20,12 @@ public class SqlStorage implements Storage {
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
     private final SqlHelper sqlHelper;
 
-    public SqlStorage(String dbUrl, String dbUser, String dbPassword) throws ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
+    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
@@ -75,16 +79,14 @@ public class SqlStorage implements Storage {
                 ps -> {
                     ps.setString(1, uuid);
                     ResultSet rs = ps.executeQuery();
-                    if (!rs.next()) throw new NotExistStorageException(uuid);
-                    Resume r = new Resume(uuid, rs.getString("full_name"));
+                    if (!rs.next()) {
+                        throw new NotExistStorageException(uuid);
+                    }
+                    Resume resume = new Resume(uuid, rs.getString("full_name"));
                     do {
-                        String stringOfType = rs.getString("type");
-                        if (stringOfType.isBlank()) continue;
-                        String value = rs.getString("value");
-                        ContactType type = ContactType.valueOf(stringOfType);
-                        r.addContact(type, value);
+                        getContacts(rs, resume);
                     } while (rs.next());
-                    return r;
+                    return resume;
                 });
     }
 
@@ -117,11 +119,7 @@ public class SqlStorage implements Storage {
                             resume = new Resume(uuid, fullName);
                             resumeMap.put(uuid, resume);
                         }
-                        String stringOfType = rs.getString("type");
-                        if (stringOfType.isBlank()) continue;
-                        ContactType type = ContactType.valueOf(stringOfType);
-                        String value = rs.getString("value");
-                        resume.addContact(type, value);
+                        getContacts(rs, resume);
                     }
                     return new ArrayList<>(resumeMap.values());
                 });
@@ -146,13 +144,24 @@ public class SqlStorage implements Storage {
         }
     }
 
+    private void getContacts(ResultSet rs, Resume resume) throws SQLException {
+        String stringOfType = rs.getString("type");
+        if (stringOfType != null) {
+            String value = rs.getString("value");
+            ContactType type = ContactType.valueOf(stringOfType);
+            resume.addContact(type, value);
+        }
+    }
+
+    private void checkNotExist(PreparedStatement ps, String uuid) throws SQLException {
+        if (ps.executeUpdate() == 0) {
+            throw new NotExistStorageException(uuid);
+        }
+    }
+
     private void setExpressionForContact(PreparedStatement ps, String exp1, String exp2, String exp3) throws SQLException {
         ps.setString(1, exp1);
         ps.setString(2, exp2);
         ps.setString(3, exp3);
-    }
-
-    private void checkNotExist(PreparedStatement ps, String uuid) throws SQLException {
-        if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
     }
 }
