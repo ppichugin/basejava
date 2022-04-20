@@ -22,18 +22,17 @@ public class ResumeServlet extends HttpServlet {
         Storage sqlStorage = Config.get().getSqlStorage();
         PrintWriter out = response.getWriter();
         out.println("<html>");
-        out.println("<style>\n" +
-                "table, th, td { border:1px solid black;\n }\n </style>");
+        out.println("<style>\ntable, th, td { border:1px solid black;\n }\n </style>");
         out.println("<head>");
         out.println("<title>Resume database</title>");
         out.println("</head>");
         out.println("<body bgcolor=\"WHITE\">");
         out.println("<h2>RESUMES:</h2>");
-        out.println("<table style=\"width:50%\">\n" +
-                "  <tr>\n" +
-                "    <th>UUID</th>\n" +
-                "    <th>FullName</th>\n" +
-                "  </tr>");
+        out.println("<table style=\"width:50%\">\n");
+        out.println("<tr>");
+        out.println("<th>UUID</th>");
+        out.println("<th>FullName</th>");
+        out.println("</tr>");
         for (Resume resume : sqlStorage.getAllSorted()) {
             out.println("<tr>");
             out.print("<td>" + resume.getUuid());

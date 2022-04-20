@@ -138,7 +138,7 @@ public class SqlStorage implements Storage {
                     String resumeUuid = rs.getString("resume_uuid");
                     Resume resume = resumeMap.get(resumeUuid);
                     addContact(rs, resume);
-                    resumeMap.put(resumeUuid, resume);
+//                    resumeMap.put(resumeUuid, resume);
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section ORDER BY resume_uuid")) {
@@ -147,7 +147,7 @@ public class SqlStorage implements Storage {
                     String resumeUuid = rs.getString("resume_uuid");
                     Resume resume = resumeMap.get(resumeUuid);
                     addSection(rs, resume);
-                    resumeMap.put(resumeUuid, resume);
+//                    resumeMap.put(resumeUuid, resume);
                 }
             }
             return new ArrayList<>(resumeMap.values());
@@ -195,12 +195,11 @@ public class SqlStorage implements Storage {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)")) {
             for (Map.Entry<SectionType, AbstractSection> e : r.getSections().entrySet()) {
                 SectionType sectionType = e.getKey();
-                Map<SectionType, AbstractSection> sections = r.getSections();
                 String sectionValue = null;
                 switch (sectionType) {
                     case OBJECTIVE, PERSONAL -> sectionValue = ((TextSection) e.getValue()).getTopic();
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> blocks = ((ListSection) sections.get(e.getKey())).getBlocks();
+                        List<String> blocks = ((ListSection) r.getSections().get(e.getKey())).getBlocks();
                         sectionValue = String.join("\n", blocks);
                     }
                 }
