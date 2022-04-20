@@ -1,12 +1,15 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.ContactType;
+import com.urise.webapp.model.ListSection;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.model.SectionType;
+import com.urise.webapp.model.TextSection;
 
 import java.util.UUID;
 
 import static com.urise.webapp.model.ContactType.*;
+import static com.urise.webapp.model.SectionType.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
@@ -36,20 +39,20 @@ public class ResumeTestData {
         resume.addContact(GITHUB, "https://github.com/gkislin");
         resume.addContact(STACKOVERFLOW, "https://stackoverflow.com/users/548473");
         resume.addContact(WEB, "http://gkislin.ru/");
-//
-//        resume.addSection(OBJECTIVE, new TextSection("Ведущий стажировок " +
-//                "и корпоративного обучения по Java Web и Enterprise технологиям."));
-//        resume.addSection(PERSONAL, new TextSection("Аналитический склад ума, " +
-//                "сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
-//
-//        resume.addSection(ACHIEVEMENT, new ListSection(
-//                "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven."
-//                , "Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike."
-//                , "Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM."));
-//        resume.addSection(QUALIFICATIONS, new ListSection(
-//                "JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2"
-//                , "Version control: Subversion, Git, Mercury, ClearCase, Perforce"
-//                , "DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle"));
+
+        resume.addSection(OBJECTIVE, new TextSection("Ведущий стажировок " +
+                "и корпоративного обучения по Java Web и Enterprise технологиям."));
+        resume.addSection(PERSONAL, new TextSection("Аналитический склад ума, " +
+                "сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
+
+        resume.addSection(ACHIEVEMENT, new ListSection(
+                "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven."
+                , "Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike."
+                , "Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM."));
+        resume.addSection(QUALIFICATIONS, new ListSection(
+                "JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2"
+                , "Version control: Subversion, Git, Mercury, ClearCase, Perforce"
+                , "DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle"));
 //
 //        resume.addSection(EXPERIENCE, new OrganizationsSection(
 //                new Organization("Java Online Projects", "http://javaops.ru/"
