@@ -127,27 +127,22 @@ public class SqlStorage implements Storage {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     String uuid = rs.getString("uuid");
-                    String fullName = rs.getString("full_name");
-                    Resume resume = new Resume(uuid, fullName);
+                    Resume resume = new Resume(uuid, rs.getString("full_name"));
                     resumeMap.put(uuid, resume);
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact ORDER BY resume_uuid")) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    String resumeUuid = rs.getString("resume_uuid");
-                    Resume resume = resumeMap.get(resumeUuid);
+                    Resume resume = resumeMap.get(rs.getString("resume_uuid"));
                     addContact(rs, resume);
-//                    resumeMap.put(resumeUuid, resume);
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section ORDER BY resume_uuid")) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    String resumeUuid = rs.getString("resume_uuid");
-                    Resume resume = resumeMap.get(resumeUuid);
+                    Resume resume = resumeMap.get(rs.getString("resume_uuid"));
                     addSection(rs, resume);
-//                    resumeMap.put(resumeUuid, resume);
                 }
             }
             return new ArrayList<>(resumeMap.values());
