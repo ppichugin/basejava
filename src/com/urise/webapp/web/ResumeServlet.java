@@ -1,16 +1,27 @@
 package com.urise.webapp.web;
 
 import com.urise.webapp.Config;
+import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.storage.Storage;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
 
 public class ResumeServlet extends HttpServlet {
+    private Storage sqlStorage;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        sqlStorage = Config.get().getSqlStorage();
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
 
     }
@@ -19,27 +30,32 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-        Storage sqlStorage = Config.get().getSqlStorage();
-        PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<style>\ntable, th, td { border:1px solid black;\n }\n </style>");
-        out.println("<head>");
-        out.println("<title>Resume database</title>");
-        out.println("</head>");
-        out.println("<body bgcolor=\"WHITE\">");
-        out.println("<h2>RESUMES:</h2>");
-        out.println("<table style=\"width:50%\">\n");
-        out.println("<tr>");
-        out.println("<th>UUID</th>");
-        out.println("<th>FullName</th>");
-        out.println("</tr>");
+
+        Writer writer = response.getWriter();
+        writer.write(
+                "<html>\n" +
+                        "<head>\n" +
+                        "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
+                        "    <link rel=\"stylesheet\" href=\"css/style.css\">\n" +
+                        "    <title>Список всех резюме</title>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "<section>\n" +
+                        "<table border=\"1\" cellpadding=\"8\" cellspacing=\"0\">\n" +
+                        "    <tr>\n" +
+                        "        <th>Имя</th>\n" +
+                        "        <th>Email</th>\n" +
+                        "    </tr>\n");
         for (Resume resume : sqlStorage.getAllSorted()) {
-            out.println("<tr>");
-            out.print("<td>" + resume.getUuid());
-            out.print("<td>" + resume.getFullName());
+            writer.write(
+                    "<tr>\n" +
+                            "     <td><a href=\"resume?uuid=" + resume.getUuid() + "\">" + resume.getFullName() + "</a></td>\n" +
+                            "     <td>" + resume.getContact(ContactType.EMAIL) + "</td>\n" +
+                            "</tr>\n");
         }
-        out.println("</table>");
-        out.println("</body>");
-        out.println("</html>");
+        writer.write("</table>\n" +
+                "</section>\n" +
+                "</body>\n" +
+                "</html>\n");
     }
 }
