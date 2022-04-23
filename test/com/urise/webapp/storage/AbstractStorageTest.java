@@ -13,21 +13,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
+import static com.urise.webapp.TestData.*;
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
     protected static final File STORAGE_DIR = Config.get().getStorageDir();
-
     protected final Storage storage;
-    private static final String UUID_1 = UUID.randomUUID().toString();
-    private static final String UUID_2 = UUID.randomUUID().toString();
-    private static final String UUID_3 = UUID.randomUUID().toString();
-    private static final String UUID_4 = UUID.randomUUID().toString();
-    private static final Resume R1 = ResumeTestData.createResume(UUID_1, "Name1");
-    private static final Resume R2 = ResumeTestData.createResume(UUID_2, "Name2");
-    private static final Resume R3 = ResumeTestData.createResume(UUID_3, "Name2");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
