@@ -10,10 +10,10 @@ public enum ContactType {
             return getTitle() + ": " + toLink("skype:" + value, value);
         }
     },
-    EMAIL("E-Mail") {
+    EMAIL("email") {
         @Override
         public String toHtml0(String value) {
-            return getTitle() + ": " + toLink("mailto:" + value, value);
+            return toLink("mailto:" + value, value);
         }
     },
     LINKEDIN("LinkedIn") {

@@ -1,6 +1,8 @@
 section {
-    width: 900px;
+    width: 600px;
     margin: auto;
+    font-size: 18px;
+    line-height: 25px;
 }
 
 header {
@@ -41,10 +43,6 @@ h2, h3 {
     margin: 15px 0 5px;
 }
 
-li {
-    margin: 15px 0;
-}
-
 a[href^="skype:"] {
     padding-left: 20px !important;
     background: url(../img/skype.png) no-repeat center left;
@@ -68,4 +66,63 @@ a[href^="https://www.linkedin.com"] {
 a[href*="github."] {
     padding-left: 20px !important;
     background: url(../img/gh.png) no-repeat center left;
+}
+
+.add-resume {
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-left: 350px;
+    margin-bottom: 30px;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 30px;
+    margin-bottom: 35px;
+}
+
+.org-name {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 25px;
+}
+
+.period-position-description {
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.field-label {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.dates {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 25px;
+    min-width: 150px;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 25px;
+    min-width: 450px;
+}
+
+.description {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 25px;
+}
+
+.warning {
+    border-color: red;
 }

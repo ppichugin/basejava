@@ -1,8 +1,13 @@
 package com.urise.webapp.web;
 
 import com.urise.webapp.Config;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.model.AbstractSection;
 import com.urise.webapp.model.ContactType;
+import com.urise.webapp.model.ListSection;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.SectionType;
+import com.urise.webapp.model.TextSection;
 import com.urise.webapp.storage.Storage;
 
 import javax.servlet.ServletConfig;
@@ -11,6 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ResumeServlet extends HttpServlet {
     private Storage sqlStorage;
@@ -25,26 +32,53 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
-        Resume r = sqlStorage.get(uuid);
-        r.setFullName(fullName);
+        Resume r;
+        boolean isResumeNew = false;
+        try {
+            r = sqlStorage.get(uuid);
+        } catch (NotExistStorageException e) {
+            r = new Resume(uuid, fullName);
+            isResumeNew = true;
+        }
+        r.setFullName(fullName.trim());
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
-                r.addContact(type, value);
+                r.addContact(type, value.trim());
             } else {
                 r.getContacts().remove(type);
             }
         }
-        sqlStorage.update(r);
+        for (SectionType sectionType : SectionType.values()) {
+            if (sectionType == SectionType.EDUCATION || sectionType == SectionType.EXPERIENCE) {
+                continue;
+            }
+            String sectionValue = request.getParameter(sectionType.name());
+            if (sectionValue != null && sectionValue.trim().length() != 0) {
+                AbstractSection section = null;
+                switch (sectionType) {
+                    case OBJECTIVE, PERSONAL -> section = new TextSection(sectionValue.trim());
+                    case ACHIEVEMENT, QUALIFICATIONS -> {
+                        String[] listStr = sectionValue.trim().split("\n");
+                        section = new ListSection(Arrays.stream(listStr)
+                                .filter(c -> c.trim().length() > 0)
+                                .collect(Collectors.toList()));
+                    }
+                }
+                r.addSection(sectionType, section);
+            } else {
+                r.getSections().remove(sectionType);
+            }
+        }
+        if (isResumeNew) {
+            sqlStorage.save(r);
+        } else {
+            sqlStorage.update(r);
+        }
         response.sendRedirect("resume");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-//        request.setCharacterEncoding("UTF-8");
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("text/html; charset=UTF-8");
-//        request.setAttribute("resumes", sqlStorage.getAllSorted());
-//        request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
@@ -54,16 +88,14 @@ public class ResumeServlet extends HttpServlet {
         }
         Resume r;
         switch (action) {
-            case "delete":
+            case "delete" -> {
                 sqlStorage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
-            case "view":
-            case "edit":
-                r = sqlStorage.get(uuid);
-                break;
-            default:
-                throw new IllegalArgumentException("Action " + action + " is illegal");
+            }
+            case "view", "edit" -> r = sqlStorage.get(uuid);
+            case "add" -> r = new Resume("");
+            default -> throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
         request.getRequestDispatcher(
