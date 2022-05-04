@@ -66,7 +66,7 @@
                     <div class="period-position-description">
                         <c:forEach var="position" items="${line.positions}">
                             <%@ include file="dateFormatter.jspf" %>
-                            <div class="dates">${startDate} - ${endYear > currentYear ? 'сегодня' : endDate}</div>
+                            <div class="dates">${startDate} - ${endDate le currentDate ? 'сегодня' : endDate}</div>
                             <div class="title">${position.title}</div>
                             <c:if test="${!position.description.blank}">
                                 <div class="description">${position.description}<br></div>

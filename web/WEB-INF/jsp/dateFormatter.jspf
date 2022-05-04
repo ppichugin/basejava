@@ -4,8 +4,8 @@
 <fmt:parseDate value="${position.endDate}" type="date" pattern="yyyy-MM-dd" var="parsedDate"/>
 <fmt:formatDate value="${parsedDate}" type="date" pattern="MM/yyyy" var="endDate"/>
 
-<fmt:formatDate value="${parsedDate}" type="date" pattern="yyyy" var="endYear"/>
+<%--<fmt:formatDate value="${parsedDate}" type="date" pattern="yyyy" var="endYear"/>--%>
 
 <jsp:useBean id="now" class="java.util.Date"/>
-<fmt:formatDate var="currentYear" value="${now}" type="date" pattern="yyyy"/>
+<fmt:formatDate var="currentDate" value="${now}" type="date" pattern="MM/yyyy"/>
 
