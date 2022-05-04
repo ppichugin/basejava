@@ -112,9 +112,10 @@ a[href*="github."] {
 
 .title {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 25px;
     min-width: 450px;
+    margin-bottom: 10px;
 }
 
 .description {
@@ -125,4 +126,33 @@ a[href*="github."] {
 
 .warning {
     border-color: red;
+}
+
+.period-position-input {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+.dates-title-input {
+    font-size: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.site-name-url {
+    font-weight: 300;
+    font-size: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.description-input {
+    font-size: 15px;
 }

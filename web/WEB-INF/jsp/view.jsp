@@ -49,10 +49,20 @@
             </c:when>
 
             <c:when test="${section == SectionType.EXPERIENCE || section == SectionType.EDUCATION}">
-                <c:set var="org" value="${sectionEntry.value}"/>
-                <jsp:useBean id="org" type="com.urise.webapp.model.OrganizationsSection"/>
-                <c:forEach var="line" items="${org.organizations}">
-                    <div class="org-name"><a href="${line.site.url}">${line.site.name}</a></div>
+                <c:set var="organization" value="${sectionEntry.value}"/>
+                <jsp:useBean id="organization" type="com.urise.webapp.model.OrganizationsSection"/>
+                <c:forEach var="line" items="${organization.organizations}">
+                    <div class="org-name">
+                        <c:set var="url" value="${line.site.url}"/>
+                        <c:choose>
+                            <c:when test="${url.blank}">
+                                ${line.site.name}
+                            </c:when>
+                            <c:otherwise>
+                                <a href="${line.site.url}">${line.site.name}</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                     <div class="period-position-description">
                         <c:forEach var="position" items="${line.positions}">
                             <%@ include file="dateFormatter.jspf" %>
