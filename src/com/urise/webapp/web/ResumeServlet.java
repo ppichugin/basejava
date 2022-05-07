@@ -12,6 +12,8 @@ import com.urise.webapp.model.SectionType;
 import com.urise.webapp.model.TextSection;
 import com.urise.webapp.model.WebLink;
 import com.urise.webapp.storage.Storage;
+import com.urise.webapp.util.DateUtil;
+import com.urise.webapp.util.HtmlUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,11 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -91,10 +91,11 @@ public class ResumeServlet extends HttpServlet {
                         String endDate = parametersMap.get(sectionType.name() + i + "position" + j + "endDate")[0];
                         String position = parametersMap.get(sectionType.name() + i + "position" + j + "position")[0].trim();
                         String description = null;
+                        LocalDate today = LocalDate.parse(LocalDate.now().format(DateUtil.DATE_FORMATTER));
                         if (sectionType == SectionType.EXPERIENCE) {
                             description = parametersMap.get(sectionType.name() + i + "position" + j + "description")[0].trim();
                         }
-                        if (Objects.equals(endDate, "")) {
+                        if (HtmlUtil.isEmpty(endDate) || parseDate(endDate).toEpochDay() >= today.toEpochDay()) {
                             positions.add(new Organization.Position(
                                     parseDate(startDate).getYear(),
                                     parseDate(startDate).getMonth(),
@@ -182,8 +183,7 @@ public class ResumeServlet extends HttpServlet {
     }
 
     private LocalDate parseDate(String dateStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
-        return LocalDate.parse(dateStr, formatter);
+        return LocalDate.parse(dateStr, DateUtil.DATE_FORMATTER);
     }
 
     private <T> List<T> copyList(List<T> source) {

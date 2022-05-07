@@ -2,6 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="com.urise.webapp.model.SectionType" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="com.urise.webapp.model.Organization" %>
+<%@ page import="com.urise.webapp.model.Organization.Position" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -66,7 +69,7 @@
                     <div class="period-position-description">
                         <c:forEach var="position" items="${line.positions}">
                             <%@ include file="dateFormatter.jspf" %>
-                            <div class="dates">${startDate} - ${endDate le currentDate ? 'сегодня' : endDate}</div>
+                            <div class="dates">${startDate} - ${endDate == '01/3000' ? 'сегодня' : endDate}</div>
                             <div class="title">${position.title}</div>
                             <c:if test="${!position.description.blank}">
                                 <div class="description">${position.description}<br></div>
