@@ -1,4 +1,4 @@
-### Готовое демо-приложение доступно [на Heroku](https://resumes-demo.herokuapp.com/resume)
+### Готовое демо-приложение доступно по адресу [http://resumes-demo.pichugin.kz](http://resumes-demo.pichugin.kz)
 
 ***
 
