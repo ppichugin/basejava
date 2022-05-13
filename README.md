@@ -1,4 +1,4 @@
-# [Готовое демо-приложение на Heroku](https://resumes-demo.herokuapp.com/resume)
+### Готовое демо-приложение доступно [на Heroku](https://resumes-demo.herokuapp.com/resume)
 
 ***
 
@@ -206,7 +206,7 @@
 - Загрузка классов в Java. Classloader
 - Домашнее задание
 
-## Книги
+## Книги с курса
 
 - [Джошуа Блох, "Java. Эффективное программирование, 3-е издание"](https://www.ozon.ru/context/detail/id/148627191/)
 - [Роберт Мартин, "Чистый код"](https://www.ozon.ru/context/detail/id/142429922/)
